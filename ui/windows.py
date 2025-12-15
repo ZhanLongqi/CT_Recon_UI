@@ -17,7 +17,7 @@ def create_control_window(my_data):
                 label="Raw File Path",
                 width=300,
                 default_value=my_data['raw_folder_path'],
-                tag='raw_folder_path_input',
+                tag='raw_folder_path',
                 callback=update_file_path_callback,
                 user_data=my_data
             )
@@ -60,7 +60,7 @@ def create_proj_viewer_window(my_data, MAX_IMAGE_INDEX):
             # 衰减信号图像显示
             dpg.add_image('attenuation_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
             #初始加载一次显示图像
-            change_image_callback(sender=None,app_data=0,user_data=my_data)
+            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_data)
 
 def create_recon_viewer_window(my_data):
     """创建重建查看器窗口"""
@@ -132,7 +132,7 @@ def create_recon_viewer_window(my_data):
                     callback=edit_geo_callback,
                     user_data=my_data,
                     default_value=geo.offDetector[0],
-                    step=0.005
+                    step=0.001
                 )
                 dpg.add_input_double(
                     label="off_detector_1",
@@ -142,6 +142,35 @@ def create_recon_viewer_window(my_data):
                     user_data=my_data,
                     default_value=geo.offDetector[1],
                     step=0.005
+                )
+                dpg.add_input_double(
+                    label="off_origin_0",
+                    tag="off_origin_0",
+                    width=100,
+                    callback=edit_geo_callback,
+                    user_data=my_data,
+                    default_value=geo.offOrigin[0],
+                    step=0.5
+                )
+                dpg.add_same_line()
+                dpg.add_input_double(
+                    label="off_origin_1",
+                    tag="off_origin_1",
+                    width=100,
+                    callback=edit_geo_callback,
+                    user_data=my_data,
+                    default_value=geo.offOrigin[1],
+                    step=0.5
+                )
+                dpg.add_same_line()
+                dpg.add_input_double(
+                    label="off_origin_2",
+                    tag="off_origin_2",
+                    width=100,
+                    callback=edit_geo_callback,
+                    user_data=my_data,
+                    default_value=geo.offOrigin[2],
+                    step=0.5
                 )
             with dpg.child_window(label='Recon Raw',width=550,height=700,tag='Recon_viewer_child_1'):
                 dpg.add_image('recon_slice_dering', width=500, height=500)

@@ -12,7 +12,7 @@ TEXTURE_FORMAT = dpg.mvFormat_Float_rgba
 # ===================== 全局数据存储 =====================
 
 my_data = {
-    'raw_folder_path': '/media/lonqi/PS2000/rat_01_part4/20_30',
+    'raw_folder_path': '/media/lonqi/PS2000/rat_01_part5/20_30',
     'data_type': np.uint32,
     'proj_width': PROJ_WIDTH,
     'proj_height': PROJ_HEIGHT,

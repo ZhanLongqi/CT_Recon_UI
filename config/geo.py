@@ -12,3 +12,4 @@ geo.sDetector = geo.nDetector * geo.dDetector
 geo.angles = np.linspace(0, 2 * np.pi, 600) 
 geo.offDetector = np.array([0,-8.9*0.2],dtype=np.float32)
 geo.offOrigin = np.array([-geo.nVoxel[0]/2*geo.dVoxel[0],-geo.nVoxel[1]/2*geo.dVoxel[1],-geo.nVoxel[2]/2*geo.dVoxel[2]],np.float32)#z,y,x cm
+geo.rotDetector = np.array([0,0,0])

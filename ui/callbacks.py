@@ -21,7 +21,6 @@ def change_image_callback(sender, app_data, user_data):
 def change_view_layer_callback(sender, app_data, user_data):
     """图层切换回调"""
     try:
-        new_idx = app_data
         user_data['recon_layer'] = app_data
         reconstrcut_callback(sender='Reconstruct', app_data=None, user_data=None, my_data=user_data)
         reconstrcut_callback(sender='Reconstruct_dering', app_data=None, user_data=None, my_data=user_data)
@@ -32,7 +31,7 @@ def change_view_layer_callback(sender, app_data, user_data):
 def update_file_path_callback(sender, app_data, user_data):
     """更新文件路径回调"""
     try:
-        path_key = sender.split('_')[0] + '_file_path'
+        path_key = 'raw_folder_path'
         if path_key in user_data:
             user_data[path_key] = dpg.get_value(sender)
     except Exception as e:
