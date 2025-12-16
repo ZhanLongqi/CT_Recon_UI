@@ -5,7 +5,7 @@ from config.config import *
 from core.data_handling import load_raw_files, create_attenuation_sinogram
 from ui.texture_registry import create_texture_registry
 from ui.windows import create_control_window, create_proj_viewer_window, create_recon_viewer_window
-
+import traceback
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -60,8 +60,10 @@ def main():
         logger.info("🛑 Program interrupted by user")
         print("\n🛑 Program interrupted by user")
     except Exception as e:
+        error_trace = traceback.format_exc()
         logger.error(f"Main program error: {str(e)}")
-        print(f"❌ Program error: {str(e)}")
+        print(f"📌 Error details (file/line/function):\n{error_trace}")
+        
     finally:
         # 清理资源
         dpg.destroy_context()

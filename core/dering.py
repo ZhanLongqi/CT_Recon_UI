@@ -27,7 +27,7 @@ def Fitting_dering(sino):
         sort=dpg.get_value('Fitting_param_sort'),
         num_chunk=dpg.get_value('Fitting_param_num_chunk')
     )
-    return np.expand_dims(sino_clean,axis=1)
+    return sino_clean
 
 def Filtering_dering(sino):
     sino_clean = rem.remove_stripe_based_filtering(
@@ -36,11 +36,11 @@ def Filtering_dering(sino):
         size=dpg.get_value('Filtering_param_size'),
         sort=dpg.get_value('Filtering_param_sort')
     )
-    return np.expand_dims(sino_clean,axis=1)
+    return sino_clean
 
 def Sorting_dering(sino):
     sino_clean = rem.remove_stripe_based_sorting(
     np.squeeze(sino), 
     option={"method": "gaussian_filter", "para1": (dpg.get_value('Sorting_param_sigma'), dpg.get_value('Sorting_param_size'))}  # 高斯滤波，sigma=1, size=21
     )
-    return np.expand_dims(sino_clean,axis=1)
+    return sino_clean

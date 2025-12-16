@@ -4,10 +4,10 @@ from ui.callbacks import (
     change_image_callback, change_view_layer_callback,
     update_file_path_callback, edit_geo_callback,select_dering_callback
 )
-from core.reconstruction import reconstrcut_callback
+from ui.callbacks import reconstrcut_callback,dering_callback
 from core.data_handling import load_raw_files,create_attenuation_sinogram
 import core.dering as dering
-from config.geo import geo
+from config.config import geo
 def create_control_window(my_data):
     """创建控制窗口（文件路径设置）"""
     with dpg.window(label="Control Panel", width=420, height=1200):
@@ -82,12 +82,12 @@ def create_recon_viewer_window(my_data):
                     label='Dering Algorithm',
                     tag='dering_algorithm',
                     width=250,
-                    default_value=dering.algorithms[0],
+                    default_value=my_data['dering_algorithm'],
                     callback=lambda s,a,u:(u.update({'dering_algorithm':a}),select_dering_callback(s,a,u)),
                     user_data=my_data
                 )
 
-                t = lambda s, a, u: reconstrcut_callback(s, a, u, my_data)
+                t = lambda s, a, u: dering_callback(s, a, u, my_data)
                 # 去环重建按钮
                 dpg.add_button(
                     label='Dering',
@@ -96,13 +96,6 @@ def create_recon_viewer_window(my_data):
                 )
 
                 dpg.add_same_line()
-
-                # dpg.add_button(
-                #     label = 'Config Dering',
-                #     tag = 'Config_dering',
-                #     callback = select_dering_callback,
-                #     user_data=my_data
-                # )
                 
                 # 图层滑块
                 dpg.add_slider_int(
@@ -143,35 +136,7 @@ def create_recon_viewer_window(my_data):
                     default_value=geo.offDetector[1],
                     step=0.005
                 )
-                dpg.add_input_double(
-                    label="off_origin_0",
-                    tag="off_origin_0",
-                    width=100,
-                    callback=edit_geo_callback,
-                    user_data=my_data,
-                    default_value=geo.offOrigin[0],
-                    step=0.5
-                )
-                dpg.add_same_line()
-                dpg.add_input_double(
-                    label="off_origin_1",
-                    tag="off_origin_1",
-                    width=100,
-                    callback=edit_geo_callback,
-                    user_data=my_data,
-                    default_value=geo.offOrigin[1],
-                    step=0.5
-                )
-                dpg.add_same_line()
-                dpg.add_input_double(
-                    label="off_origin_2",
-                    tag="off_origin_2",
-                    width=100,
-                    callback=edit_geo_callback,
-                    user_data=my_data,
-                    default_value=geo.offOrigin[2],
-                    step=0.5
-                )
+
             with dpg.child_window(label='Recon Raw',width=550,height=700,tag='Recon_viewer_child_1'):
                 dpg.add_image('recon_slice_dering', width=500, height=500)
 

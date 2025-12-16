@@ -20,7 +20,6 @@ def load_raw_files(my_data):
         if sinogram_on_screen.max() > 0:
             sinogram_on_screen = sinogram_on_screen / sinogram_on_screen.max()
         sinogram_on_screen = sinogram_on_screen.astype(np.float32)
-        sinogram_on_screen = np.expand_dims(sinogram_on_screen, axis=3)
         
         # 更新全局数据
         my_data['sinogram_raw_signal_original'] = sinogram_original
@@ -47,7 +46,6 @@ def create_attenuation_sinogram(my_data):
             light_field_path=my_data['light_field_file_path']
         )
         
-        attenuation_data = np.expand_dims(attenuation_data, axis=3)
         attenuation_data_norm = attenuation_data - attenuation_data.min()
         
         if attenuation_data_norm.max() > 0:

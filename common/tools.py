@@ -5,7 +5,7 @@ import sys
 import dearpygui.dearpygui as dpg
 import matplotlib.pyplot as plt
 from tigre import geometry
-from config.geo import geo
+from config.config import geo
 import tigre.algorithms as algs
 def load_sinogram_from_raw_folder(
     folder_path,
@@ -143,7 +143,7 @@ def load_light_field(
     print(f"校准文件形状：{proj.shape}（{7}个厚度, {proj_height}行, {proj_width}通道）")
     return proj
 
-def signal_to_attenuation(sinogram, I0=None, dark_current=0,light_field_path = '/media/lonqi/PS2000/stacked_3d.raw'):
+def signal_to_attenuation(sinogram, I0=None, dark_current=0,light_field_path = '/media/lonqi/PS2000/stacked_3d.raw',no_light_field=False):
     """
     将探测器信号强度（I）转换为衰减系数的线积分投影（-ln(I/I0)）
     :param sinogram: 原始信号强度投影数据 [角度数, 探测器行数, 探测器通道数]
@@ -151,15 +151,18 @@ def signal_to_attenuation(sinogram, I0=None, dark_current=0,light_field_path = '
     :param dark_current: 探测器暗电流（无X射线时的噪声信号，需提前校准）
     :return: attenuation_sinogram: 衰减系数线积分投影数据
     """
-    light_field = load_light_field(light_field_path,dtype=np.float32,proj_width=384,proj_height=128*7)
-    light_field = light_field[0]
-    # 1. 扣除暗电流（探测器噪声校准）
-    sinogram_corrected = sinogram
-    # 避免负信号（扣除暗电流后可能出现，设为极小值）
-    sinogram_corrected = np.maximum(sinogram_corrected, 0)
-    eps = 1e-20
-    # 3. 应用朗伯-比尔定律，转换为衰减系数线积分
-    attenuation_sinogram = -np.log(sinogram_corrected / (light_field + eps))
+    if no_light_field:
+        light_field = np.ones_like(sinogram)
+    else:
+        light_field = load_light_field(light_field_path,dtype=np.float32,proj_width=384,proj_height=128*7)
+        light_field = light_field[0]
+        # 1. 扣除暗电流（探测器噪声校准）
+        sinogram_corrected = sinogram
+        # 避免负信号（扣除暗电流后可能出现，设为极小值）
+        sinogram_corrected = np.maximum(sinogram_corrected, 0)
+        eps = 1e-20
+        # 3. 应用朗伯-比尔定律，转换为衰减系数线积分
+        attenuation_sinogram = -np.log(sinogram_corrected / (light_field + eps))
     
     # 4. 限制异常值（避免log计算导致的极端值）
     attenuation_sinogram = np.clip(attenuation_sinogram, 0, np.percentile(attenuation_sinogram, 99.9))
@@ -172,7 +175,7 @@ def signal_to_attenuation(sinogram, I0=None, dark_current=0,light_field_path = '
 def ct_reconstruction_multi_row(sinogram):
     """支持多排探测器的CT重建（逐行重建后拼接，适配单排/多排）"""
     num_angles, num_rows, num_detectors = sinogram.shape
-    recon_list = []
+
     # print(f"开始CT重建，共{num_rows}行探测器数据...")
 
     theta = np.linspace(0,2*np.pi,600)

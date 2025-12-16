@@ -1,0 +1,34 @@
+# ===================== 界面配置 =====================
+window:
+  title: "Lonqi's Reconstruction Program"
+  width: 2400
+  height: 1200
+projection:
+  width: 384
+  height: 64
+  max_image_index: 599  # 滑块最大索引值
+texture:
+  format: "mvFormat_Float_rgba"  # DPG纹理格式
+
+# ===================== 数据路径与格式配置 =====================
+data:
+  raw_folder_path: "/media/lonqi/PS2000/rat_01_part5/20_30"
+  light_field_file_path: "/media/lonqi/PS2000/stacked_3d.raw"
+  data_type: "uint32"  # numpy数据类型
+  byte_order: "little"  # 字节序：little/big
+  recon_layer: 30  # 重建层号
+  dering_algorithm: "None"  # 去环算法
+
+# ===================== 几何配置 =====================
+geometry:
+  mode: "cone"  # 锥束模式
+  DSD_base: 1105.12
+  scale_DSD: 0.2
+  nDetector: [64, 384]
+  nVoxel: [64, 384, 384]
+  dVoxel: [0.1, 0.1, 0.1]
+  dDetector: [0.2, 0.2]
+  nAngles: 600
+  offDetector_base: [0, -8.9]
+  scale_offDetector: 0.2
+  rotDetector: [0, 0, 0]

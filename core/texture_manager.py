@@ -20,7 +20,8 @@ def update_texture_display(texture_tag, my_data, idx=0):
             return
             
         # 适配RGBA格式并展平
-        texture_data = data_source[idx].repeat(axis=2, repeats=4).flatten()
+        texture_data = np.expand_dims(data_source[idx],axis=2)
+        texture_data = texture_data.repeat(axis=2, repeats=4).flatten()
         dpg.set_value(texture_tag, texture_data)
     except Exception as e:
         logger.error(f"Update texture {texture_tag} error: {str(e)}")
