@@ -1,9 +1,7 @@
 import logging
 import dearpygui.dearpygui as dpg
 from core.texture_manager import update_texture_display
-from config.config import geo
 from common.tools import clear_all_children
-from config.config import my_data
 import numpy as np
 from core.reconstruction import reconstruct
 import traceback
@@ -25,8 +23,8 @@ def change_view_layer_callback(sender, app_data, user_data):
     """图层切换回调"""
     try:
         user_data['recon_layer'] = app_data
-        update_texture_display('recon_slice', my_data,idx = app_data)
-        update_texture_display('recon_slice_dering', my_data,idx = app_data)
+        update_texture_display('recon_slice', user_data,idx = app_data)
+        update_texture_display('recon_slice_dering', user_data,idx = app_data)
     except Exception as e:
         logger.error(f"Change layer error: {str(e)}")
         print(f"❌ Error changing Layer: {str(e)}")
@@ -34,7 +32,7 @@ def change_view_layer_callback(sender, app_data, user_data):
 def update_file_path_callback(sender, app_data, user_data):
     """更新文件路径回调"""
     try:
-        path_key = 'raw_folder_path'
+        path_key = 'root_path'
         if path_key in user_data:
             user_data[path_key] = dpg.get_value(sender)
     except Exception as e:
@@ -46,19 +44,19 @@ def edit_geo_callback(sender, app_data, user_data):
     try:
         match sender:
             case 'geo_dsd':
-                geo.DSD = app_data
+                my_data['geo'].DSD = app_data
             case 'off_detector_0':
-                geo.offDetector[0] = app_data
+                my_data['geo'].offDetector[0] = app_data
             case 'off_detector_1':
-                geo.offDetector[1] = app_data
+                my_data['geo'].offDetector[1] = app_data
             case 'off_detector_2':
-                geo.offDetector[2] = app_data
+                my_data['geo'].offDetector[2] = app_data
             case 'off_origin_0':
-                geo.offOrigin[0] = app_data
+                my_data['geo'].offOrigin[0] = app_data
             case 'off_origin_1':
-                geo.offOrigin[1] = app_data
+                my_data['geo'].offOrigin[1] = app_data
             case 'off_origin_2':
-                geo.offOrigin[2] = app_data
+                my_data['geo'].offOrigin[2] = app_data
         dering_callback(sender='Reconstruct', app_data=None, user_data=None, my_data=user_data)
     except Exception as e:
         logger.error(f"Edit geo error: {str(e)}")

@@ -1,12 +1,9 @@
-import dearpygui.dearpygui as dpg
-import dearpygui.demo as demo
+import numpy as np
+import matplotlib.pyplot as plt
 
-dpg.create_context()
-dpg.create_viewport(title='Custom Title', width=600, height=600)
-
-demo.show_demo()
-
-dpg.setup_dearpygui()
-dpg.show_viewport()
-dpg.start_dearpygui()
-dpg.destroy_context()
+data = (
+    np.fromfile("/media/lonqi/PS2000/rat_01_part5/20_30/0001_0.0000_0.raw", dtype=np.uint32)
+        .astype(float).reshape(128,384)
+    )
+data = data / 10
+k = 1

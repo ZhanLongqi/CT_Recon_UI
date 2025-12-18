@@ -5,15 +5,14 @@ import sys
 import dearpygui.dearpygui as dpg
 import matplotlib.pyplot as plt
 from tigre import geometry
-from config.config import geo
 import tigre.algorithms as algs
+import json
 def load_sinogram_from_raw_folder(
     folder_path,
     file_format='raw',
     dtype=np.float32,
     proj_width=512,  # 单幅投影宽度（探测器通道数）
     proj_height=1,   # 单幅投影高度（探测器行数，单排设为1）
-    byte_order='little'  # 字节序：'little'（小端）或 'big'（大端）
 ):
     """从文件夹批量读取RAW格式投影文件，拼接为sinogram"""
     file_format = file_format.lower()
@@ -57,20 +56,7 @@ def load_sinogram_from_raw_folder(
                 "请检查 proj_width、proj_height 或 dtype 参数是否正确。"
             )
         
-        # 读取二进制数据
-        with open(file_path, 'rb') as f:
-            data = f.read()
-        
-        dtype_base = np.dtype(dtype)  # 先创建基础 dtype 实例
-        if byte_order == 'little':
-            dtype_with_byteorder = dtype_base.newbyteorder('<')  # 小端
-        elif byte_order == 'big':
-            dtype_with_byteorder = dtype_base.newbyteorder('>')  # 大端
-        else:
-            raise ValueError("byte_order 仅支持 'little'（小端）或 'big'（大端）")
-
-        # 解析二进制数据为数组（无需手动指定形状，后续统一 reshape）
-        arr = np.frombuffer(data, dtype=dtype_base)
+        arr = np.fromfile(file_path,dtype=dtype)
         arr = arr / 10
         # 重塑为单幅投影尺寸 [探测器行数, 探测器通道数]
         proj = arr.reshape((proj_height, proj_width))
@@ -82,7 +68,81 @@ def load_sinogram_from_raw_folder(
     sinogram = np.stack(sinogram_list, axis=0)
     print(f"Sinogram 形状：{sinogram.shape} "
           f"（角度数：{sinogram.shape[0]}, 探测器行数：{sinogram.shape[1]}, 探测器通道数：{sinogram.shape[2]}）")
-    return sinogram, np.array(angles)
+    return sinogram
+
+def load_sinogram_from_train_test_npy_folder(
+    root_path,
+    file_format='npy',
+    dtype=np.float32,
+    proj_width=512,
+    proj_height=1
+):
+    """
+    仿真数据，无需对结果除以10
+    一次性读取train和test文件夹下的所有NPY投影文件，合并为一个sinogram
+    
+    Args:
+        root_path: 根目录（包含train/test子文件夹）
+        其他参数同原函数
+    """
+    # 定义要读取的子集
+    subsets = ["proj_train", "proj_test"]
+    all_angle_file = []
+
+    meta_data_path = os.path.join(root_path,'meta_data.json')
+
+    # ===================== 加载配置文件并初始化所有参数 =====================
+    # 检查配置文件是否存在
+    if not os.path.exists(meta_data_path):
+        raise FileNotFoundError(f"配置文件不存在: {meta_data_path}")
+
+    # 加载 JSON 配置（替换 yaml.safe_load 为 json.load）
+    with open(meta_data_path, 'r', encoding='utf-8') as f:
+        cfg = json.load(f)
+    
+    # 遍历train和test文件夹，收集所有文件
+    for subset in subsets:
+        for i in range(len(cfg[subset])):
+            file = os.path.join(root_path,cfg[subset][i]['file_path'])
+            angle = cfg[subset][i]['angle']
+            all_angle_file.append((angle,file))
+    
+    if not all_angle_file:
+        raise ValueError("train和test文件夹中均未找到有效NPY文件")
+    
+    # 按角度全局排序（跨文件夹）
+    all_angle_file.sort(key=lambda x: x[0])
+    angles = [item[0] for item in all_angle_file]
+    num_angles = len(all_angle_file)
+    angles = [k / num_angles * 360 for k in angles]
+    print(f"共读取{num_angles}个NPY文件（包含train+test），角度范围：{angles[0]:.3f}° ~ {angles[-1]:.3f}°")
+    
+    # 读取并预处理所有文件
+    sinogram_list = []
+    for idx, (angle, file) in enumerate(all_angle_file):
+        file_path = os.path.join(root_path, file)
+        arr = np.load(file_path).astype(dtype)
+        
+        # 形状校验
+        expected_shape = (proj_height, proj_width)
+        if arr.shape != expected_shape:
+            if arr.size == proj_height * proj_width:
+                arr = arr.reshape(expected_shape)
+            else:
+                raise ValueError(
+                    f"文件{file}（{file_path}）形状不匹配！预期{expected_shape}，实际{arr.shape}"
+                )
+        
+        # 预处理
+        proj = arr.reshape((proj_height, proj_width))
+        sinogram_list.append(proj)
+    
+    # 合并为完整sinogram
+    sinogram = np.stack(sinogram_list, axis=0).astype(np.float32)
+    print(f"合并后Sinogram形状：{sinogram.shape} "
+          f"（角度数：{sinogram.shape[0]}, 探测器行数：{sinogram.shape[1]}, 探测器通道数：{sinogram.shape[2]}）")
+    
+    return sinogram
 
 def is_debugging():
     """判断是否处于调试模式（PyCharm/VSCode/debugger 附加）"""
@@ -172,13 +232,13 @@ def signal_to_attenuation(sinogram, I0=None, dark_current=0,light_field_path = '
           f"衰减投影范围 [{np.min(attenuation_sinogram):.4f}, {np.max(attenuation_sinogram):.4f}]")
     return attenuation_sinogram.astype(np.float32)
 
-def ct_reconstruction_multi_row(sinogram):
+def ct_reconstruction_multi_row(sinogram,geo):
     """支持多排探测器的CT重建（逐行重建后拼接，适配单排/多排）"""
     num_angles, num_rows, num_detectors = sinogram.shape
 
     # print(f"开始CT重建，共{num_rows}行探测器数据...")
 
-    theta = np.linspace(0,2*np.pi,600)
+    theta = np.linspace(0,2*np.pi,num_angles)
     sinogram = sinogram.astype(np.float64)
 
     recon = algs.fdk(sinogram,geo=geo,angles=theta)

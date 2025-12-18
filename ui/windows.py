@@ -7,7 +7,6 @@ from ui.callbacks import (
 from ui.callbacks import reconstrcut_callback,dering_callback
 from core.data_handling import load_raw_files,create_attenuation_sinogram
 import core.dering as dering
-from config.config import geo
 def create_control_window(my_data):
     """创建控制窗口（文件路径设置）"""
     with dpg.window(label="Control Panel", width=420, height=1200):
@@ -16,17 +15,26 @@ def create_control_window(my_data):
             dpg.add_input_text(
                 label="Raw File Path",
                 width=300,
-                default_value=my_data['raw_folder_path'],
-                tag='raw_folder_path',
+                default_value=my_data['root_path'],
+                tag='root_path',
                 callback=update_file_path_callback,
                 user_data=my_data
             )
 
             dpg.add_button(label='Confirm Path', callback=lambda: (load_raw_files(my_data),create_attenuation_sinogram(my_data)))
 
-def create_proj_viewer_window(my_data, MAX_IMAGE_INDEX):
+def create_proj_viewer_window(my_data):
+    match my_data['view_proj_style']:
+        case 0:
+            create_proj_viewer_window_style_0(my_data)
+        case 1:
+            create_proj_viewer_window_style_1(my_data)
+
+def create_proj_viewer_window_style_0(my_data):
+    if(dpg.does_item_exist('proj_viewer_window')):
+        dpg.delete_item('proj_viewer_window')
     """创建投影查看器窗口"""
-    with dpg.window(label='Projection Viewer', pos=(425, 0), width=1200, height=500):
+    with dpg.window(label='Projection Viewer', pos=(425, 0), width=1200, height=500,tag='proj_viewer_window'):
         with dpg.group():
             # 原始信号图像显示
             dpg.add_image('raw_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
@@ -35,7 +43,7 @@ def create_proj_viewer_window(my_data, MAX_IMAGE_INDEX):
             dpg.add_slider_int(
                 label='Image Index',
                 min_value=0,
-                max_value=MAX_IMAGE_INDEX,
+                max_value=my_data['max_num_proj'],
                 callback=change_image_callback,
                 user_data=my_data
             )
@@ -59,6 +67,49 @@ def create_proj_viewer_window(my_data, MAX_IMAGE_INDEX):
             
             # 衰减信号图像显示
             dpg.add_image('attenuation_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
+            #初始加载一次显示图像
+            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_data)
+
+def create_proj_viewer_window_style_1(my_data):
+    if(dpg.does_item_exist('proj_viewer_window')):
+        dpg.delete_item('proj_viewer_window')
+    """创建投影查看器窗口"""
+    with dpg.window(label='Projection Viewer', pos=(425, 0), width=1200, height=500,tag='proj_viewer_window'):
+        with dpg.group():
+            # 原始信号图像显示
+            dpg.add_image('raw_proj', width=400, height=400)
+            # 衰减信号图像显示
+            dpg.add_same_line()
+            dpg.add_spacer(width=100)
+            dpg.add_same_line()
+            dpg.add_image('attenuation_proj', width=400, height=400)
+            # 图像索引滑块
+            dpg.add_slider_int(
+                label='Image Index',
+                min_value=0,
+                max_value=my_data['max_num_proj'],
+                callback=change_image_callback,
+                user_data=my_data
+            )
+            
+            # 亮暗场文件路径输入
+            dpg.add_input_text(
+                label='Light Field File Path',
+                tag='light_field_file_path_input',
+                default_value=my_data['light_field_file_path'],
+                callback=update_file_path_callback,
+                user_data=my_data
+            )
+            
+            # 生成衰减数据按钮
+            dpg.add_button(
+                label='Generate Attenuation Sinogram',
+                tag='generate_attenuation_btn',
+                callback=lambda: create_attenuation_sinogram(my_data),
+                user_data=my_data
+            )
+            
+
             #初始加载一次显示图像
             change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_data)
 
@@ -116,7 +167,7 @@ def create_recon_viewer_window(my_data):
                     min_value=1105*0.2, max_value=1108*0.2,
                     callback=edit_geo_callback,
                     user_data=my_data,
-                    default_value=geo.DSD
+                    default_value=my_data['geo'].DSD
                 )
                 dpg.add_input_double(
                     label="off_detector_0",
@@ -124,7 +175,7 @@ def create_recon_viewer_window(my_data):
                     width=200,
                     callback=edit_geo_callback,
                     user_data=my_data,
-                    default_value=geo.offDetector[0],
+                    default_value=my_data['geo'].offDetector[0],
                     step=0.001
                 )
                 dpg.add_input_double(
@@ -133,7 +184,7 @@ def create_recon_viewer_window(my_data):
                     width=200,
                     callback=edit_geo_callback,
                     user_data=my_data,
-                    default_value=geo.offDetector[1],
+                    default_value=my_data['geo'].offDetector[1],
                     step=0.005
                 )
 

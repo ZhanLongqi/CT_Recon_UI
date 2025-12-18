@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def reconstruct(sinogram, my_data):
     """CT重建核心逻辑"""
     try:
-        recon = tools.ct_reconstruction_multi_row(sinogram)
+        recon = tools.ct_reconstruction_multi_row(sinogram,my_data['geo'])
         my_data['recon_result'] = recon
         # 归一化用于显示
         recon_norm = recon - recon.min()

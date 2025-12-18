@@ -1,6 +1,5 @@
 import numpy as np
 import dearpygui.dearpygui as dpg
-from config.config import TEXTURE_FORMAT
 
 def create_texture_registry(my_data):
     """创建纹理注册表和初始纹理"""
@@ -16,7 +15,7 @@ def create_texture_registry(my_data):
         dpg.add_raw_texture(
             width=my_data['proj_width'],
             height=my_data['proj_height'],
-            format=TEXTURE_FORMAT,
+            format=dpg.mvFormat_Float_rgba,
             default_value=initial_proj_texture,
             parent="__texture_container",
             tag="raw_proj",
@@ -26,7 +25,7 @@ def create_texture_registry(my_data):
         dpg.add_raw_texture(
             width=my_data['proj_width'],
             height=my_data['proj_height'],
-            format=TEXTURE_FORMAT,
+            format=dpg.mvFormat_Float_rgba,
             default_value=initial_proj_texture,
             parent="__texture_container",
             tag="attenuation_proj",
@@ -42,7 +41,7 @@ def create_texture_registry(my_data):
         dpg.add_raw_texture(
             width=my_data['proj_width'],
             height=my_data['proj_width'],
-            format=TEXTURE_FORMAT,
+            format=dpg.mvFormat_Float_rgba,
             default_value=initial_recon_texture,
             parent="__texture_container",
             tag='recon_slice'
@@ -51,7 +50,7 @@ def create_texture_registry(my_data):
         dpg.add_raw_texture(
             width=my_data['proj_width'],
             height=my_data['proj_width'],
-            format=TEXTURE_FORMAT,
+            format=dpg.mvFormat_Float_rgba,
             default_value=initial_recon_texture,
             parent="__texture_container",
             tag='recon_slice_dering'

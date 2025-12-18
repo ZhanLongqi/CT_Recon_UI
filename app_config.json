@@ -1,0 +1,8 @@
+{
+  "window": {
+    "title": "Lonqi's Reconstruction Program",
+    "width": 2000,
+    "height": 1200
+  },
+  "data_source": "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/pine"
+}
