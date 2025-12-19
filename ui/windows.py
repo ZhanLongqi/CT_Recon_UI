@@ -87,7 +87,7 @@ def create_proj_viewer_window_style_1(my_data):
             dpg.add_slider_int(
                 label='Image Index',
                 min_value=0,
-                max_value=my_data['max_num_proj'],
+                max_value=my_data['max_num_proj']-1,
                 callback=change_image_callback,
                 user_data=my_data
             )

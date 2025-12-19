@@ -1,11 +1,13 @@
 import logging
-import dearpygui as dpg
+import dearpygui.dearpygui as dpg
 import common.tools as tools
-from config.config import *
+from config.config import Config
 from core.data_handling import load_raw_files, create_attenuation_sinogram
 from ui.texture_registry import create_texture_registry
 from ui.windows import create_control_window, create_proj_viewer_window, create_recon_viewer_window,create_proj_viewer_window
 import traceback
+import json
+import os
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -20,7 +22,7 @@ if not os.path.exists(APP_CONFIG_PATH):
 with open(APP_CONFIG_PATH, 'r', encoding='utf-8') as f:
             cfg = json.load(f)
 
-my_config = Config(cfg['data_source'])
+my_config = Config(os.path.join(cfg['data_source'],"data_config.json"))
 
 def main():
     """主程序入口"""
@@ -57,8 +59,8 @@ def main():
         # 运行主循环
         if tools.is_debugging():
             while dpg.is_dearpygui_running():
-                jobs = dpg.get_callback_queue()
-                dpg.run_callbacks(jobs)
+                pending_callbacks = dpg.get_callback_queue()
+                dpg.run_callbacks(pending_callbacks)
                 dpg.render_dearpygui_frame()
         else:
             dpg.start_dearpygui()

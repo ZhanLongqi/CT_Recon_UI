@@ -1,14 +1,10 @@
-import dearpygui.dearpygui as dpg
 import numpy as np
 import json  # 替换 yaml 为 json
 import os
 from tigre import geometry
 class Config():
-    def __init__(self,ROOT_PATH= "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_50_angle_360_my"):
+    def __init__(self,DATA_CONFIG_PATH= "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_50_angle_360_my"):
     # 配置文件路径（修改为 JSON 配置文件路径）
-
-        DATA_CONFIG_PATH = os.path.join(ROOT_PATH,"data_config.json")
-        # CONFIG_PATH = "/home/lonqi/work/CT_Recon_UI/config/data_config.json"
 
         # ===================== 加载配置文件并初始化所有参数 =====================
         # 检查配置文件是否存在
@@ -18,9 +14,6 @@ class Config():
         # 加载 JSON 配置（替换 yaml.safe_load 为 json.load）
         with open(DATA_CONFIG_PATH, 'r', encoding='utf-8') as f:
             cfg = json.load(f)
-
-        # 映射DPG纹理格式常量
-        TEXTURE_FORMAT = dpg.mvFormat_Float_rgba
 
         # ===================== 初始化几何参数（完全匹配你的代码逻辑） =====================
         geo = geometry()
@@ -33,8 +26,9 @@ class Config():
         geo.nDetector = np.array(cfg['geometry']['nDetector'], dtype=np.int32)
 
         # 体素参数
-        geo.nVoxel = np.array(cfg['geometry']['nVoxel'])
-        geo.dVoxel = np.array(cfg['geometry']['dVoxel'], dtype=np.float32)
+        geo.nVoxel = np.array(cfg['geometry']['nVoxel'])[::-1]
+        geo.sVoxel = np.array(cfg['geometry']['sVoxel'], dtype=np.float32)[::-1]
+        geo.dVoxel = geo.sVoxel / geo.nVoxel
 
         # 探测器像素大小
         geo.dDetector = np.array(cfg['geometry']['dDetector'], dtype=np.float32)
@@ -51,10 +45,12 @@ class Config():
 
         # 原点偏移（z,y,x）
         geo.offOrigin = np.array([
-            -geo.nVoxel[0]/2 * geo.dVoxel[0],
-            -geo.nVoxel[1]/2 * geo.dVoxel[1],
-            -geo.nVoxel[2]/2 * geo.dVoxel[2]
+            cfg['geometry']['offOrigin'][0],
+            cfg['geometry']['offOrigin'][1],
+            cfg['geometry']['offOrigin'][2]
         ], dtype=np.float32)
+        
+        geo.accuracy = 1.0
 
         # 探测器旋转
         geo.rotDetector = np.array(cfg['geometry']['rotDetector'])
@@ -70,7 +66,7 @@ class Config():
         }
 
         self.glob_data = {
-            'root_path': ROOT_PATH,
+            'root_path': os.path.dirname(DATA_CONFIG_PATH),
             'data_type': dtype_map[cfg['data']['data_type']],  # 转换为numpy实际类型
             'proj_width': cfg['projection']['width'],
             'proj_height': cfg['projection']['height'],
@@ -89,5 +85,6 @@ class Config():
             'dering_algorithm': cfg['data']['dering_algorithm'],
             'file_type': cfg['data']['type'],
             'need_correction': cfg['data']['need_correction'],
-            'geo':geo
+            'geo':geo,
+            'energy_bin':cfg['data']['energy_bin']
         }

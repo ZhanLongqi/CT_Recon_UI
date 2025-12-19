@@ -1,38 +1,32 @@
 {
-  "window": {
-    "title": "Lonqi's Reconstruction Program",
-    "width": 2400,
-    "height": 1200
-  },
   "projection": {
     "width": 384,
     "height": 64,
-    "max_image_index": 599,
+    "max_image_index": 125,
     "view_proj_style": 0
   },
-  "texture": {
-    "format": "mvFormat_Float_rgba"
-  },
   "data": {
+    "energy_bin":"20_30",	  
     "light_field_file_path": "/media/lonqi/PS2000/stacked_3d.raw",
-    "data_type": "uint32",
+    "data_type": "float32",
     "byte_order": "little",
     "recon_layer": 30,
     "dering_algorithm": "None",
-    "type": "raw",
-    "need_correction": true
+    "type": "npy",
+    "need_correction": false
   },
   "geometry": {
     "mode": "cone",
     "DSD_base": 1105.12,
     "scale_DSD": 0.2,
     "nDetector": [64, 384],
-    "nVoxel": [64, 384, 384],
-    "dVoxel": [0.1, 0.1, 0.1],
+    "nVoxel": [ 384, 384 , 64],
+    "sVoxel": [25, 25, 6],
     "dDetector": [0.2, 0.2],
     "nAngles": 600,
     "offDetector_base": [0, -8.9],
     "scale_offDetector": 0.2,
-    "rotDetector": [0, 0, 0]
+    "rotDetector": [0, 0, 0],
+    "offOrigin":[0,0,0]
   }
 }

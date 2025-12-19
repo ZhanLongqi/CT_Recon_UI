@@ -240,7 +240,6 @@ def ct_reconstruction_multi_row(sinogram,geo):
 
     theta = np.linspace(0,2*np.pi,num_angles)
     sinogram = sinogram.astype(np.float64)
-
     recon = algs.fdk(sinogram,geo=geo,angles=theta)
     return recon
 

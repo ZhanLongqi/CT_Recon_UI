@@ -93,6 +93,7 @@ def dering_callback(sender,app_data,user_data,my_data):
                     param=None
             )
         recon = reconstruct(sinogram_dering, my_data)
+
         my_data['recon_result_dering_on_screen'] = recon
         if recon is not None:
             update_texture_display('recon_slice_dering', my_data,idx=recon_layer)

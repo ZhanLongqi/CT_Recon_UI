@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import common.tools as tools
 import traceback
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ def load_raw_files(my_data):
     try:
         if(my_data['file_type'] == 'raw'):
             sinogram_original = tools.load_sinogram_from_raw_folder(
-                folder_path=my_data['root_path'],
+                folder_path=os.path.join(my_data['root_path'],my_data['energy_bin']),
                 dtype=my_data['data_type'],
                 proj_width=my_data['proj_width'],
                 proj_height=my_data['proj_height'] * 2,
