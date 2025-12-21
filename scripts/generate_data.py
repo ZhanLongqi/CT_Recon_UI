@@ -17,6 +17,7 @@ from common.tools import load_sinogram_from_raw_folder,signal_to_attenuation
 from core.dering import dering
 import matplotlib.pyplot as plt 
 import algotom.prep.removal as rem
+import shutil
 random.seed(0)
 
 
@@ -25,7 +26,9 @@ SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part5/20_30"
 DEST_PATH = "/home/lonqi/work/CT_Recon_UI/data/rat_01_part5_20_30/"
 
 def main(args):
-    
+    if os.path.exists(DEST_PATH):
+        # 递归删除目录（无论是否为空）
+        shutil.rmtree(DEST_PATH)
     os.makedirs(DEST_PATH, exist_ok=True)
     os.system(f"cp {'/home/lonqi/work/CT_Recon_UI/scripts/data_config_template.json'} {osp.join(DEST_PATH,'data_config.json')}")
     my_config = Config(osp.join(DEST_PATH,"data_config.json"))
@@ -117,7 +120,7 @@ def main(args):
         "nDetector": geo.nDetector.tolist(),
         "sDetector": geo.sDetector.tolist(),
         "nVoxel": geo.nVoxel[::-1].tolist(),
-        "sVoxel": geo.sVoxel.tolist(),
+        "sVoxel": geo.sVoxel[::-1].tolist(),
         "offOrigin": geo.offOrigin.tolist(),
         "offDetector": geo.offDetector.tolist(),
         "accuracy": args.accuracy,
@@ -133,7 +136,7 @@ def main(args):
     angles = geo.angles
     print(geo)
     ct_gt = algs.fdk(attenuation_sinogram, geo,angles=angles)
-    ct_gt = ct_gt.transpose((2, 1, 0))
+    ct_gt = ct_gt.transpose(2,1,0)
     np.save(ct_gt_save_path, ct_gt)
 
     # Save
@@ -159,8 +162,8 @@ if __name__ == "__main__":
     parser.add_argument("--proj_subsample", default=1, type=int, help="subsample projections pixels")
     parser.add_argument("--proj_rescale", default=400.0, type=float, help="rescale projection values to fit density to around [0,1]")
     parser.add_argument("--object_scale", default=50, type=int, help="Rescale the whole scene to similar scales as the synthetic data")
-    parser.add_argument("--n_test", default=0, type=int, help="number of test")
-    parser.add_argument("--n_train", default=600, type=int, help="number of train")
+    parser.add_argument("--n_test", default=100, type=int, help="number of test")
+    parser.add_argument("--n_train", default=500, type=int, help="number of train")
 
     parser.add_argument("--accuracy", default=0.5, type=float, help="accuracy")
     

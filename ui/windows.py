@@ -2,35 +2,50 @@ import dearpygui.dearpygui as dpg
 import time
 from ui.callbacks import (
     change_image_callback, change_view_layer_callback,
-    update_file_path_callback, edit_geo_callback,select_dering_callback
+    update_file_path_callback, edit_geo_callback,select_dering_callback,visualize_callback
 )
 from ui.callbacks import reconstrcut_callback,dering_callback
 from core.data_handling import load_raw_files,create_attenuation_sinogram
 import core.dering as dering
-def create_control_window(my_data):
+from ui.texture_registry import  create_texture_registry
+def create_control_window(my_config):
     """创建控制窗口（文件路径设置）"""
     with dpg.window(label="Control Panel", width=420, height=1200):
+        my_data = my_config.glob_data
         # 原始文件路径输入
         with dpg.group():
+            dpg.add_combo(
+                label="Raw File Path Combo",
+                width=300,
+                default_value=my_data['root_path'],
+                items=my_config.app_cfg['data_source'],
+                callback=update_file_path_callback,
+                user_data=my_config
+            )
             dpg.add_input_text(
                 label="Raw File Path",
                 width=300,
                 default_value=my_data['root_path'],
                 tag='root_path',
                 callback=update_file_path_callback,
-                user_data=my_data
+                user_data=my_config
             )
 
-            dpg.add_button(label='Confirm Path', callback=lambda: (load_raw_files(my_data),create_attenuation_sinogram(my_data)))
+            dpg.add_button(label='Confirm Path', callback=lambda s,a,u: 
+                           (load_raw_files(u.glob_data),
+                            create_attenuation_sinogram(u.glob_data),
+                            create_texture_registry(u.glob_data)), user_data=my_config)
 
-def create_proj_viewer_window(my_data):
+def create_proj_viewer_window(my_config):
+    my_data = my_config.glob_data
     match my_data['view_proj_style']:
         case 0:
-            create_proj_viewer_window_style_0(my_data)
+            create_proj_viewer_window_style_0(my_config)
         case 1:
-            create_proj_viewer_window_style_1(my_data)
+            create_proj_viewer_window_style_1(my_config)
 
-def create_proj_viewer_window_style_0(my_data):
+def create_proj_viewer_window_style_0(my_config):
+    my_data = my_config.glob_data
     if(dpg.does_item_exist('proj_viewer_window')):
         dpg.delete_item('proj_viewer_window')
     """创建投影查看器窗口"""
@@ -45,7 +60,7 @@ def create_proj_viewer_window_style_0(my_data):
                 min_value=0,
                 max_value=my_data['max_num_proj'],
                 callback=change_image_callback,
-                user_data=my_data
+                user_data=my_config
             )
             
             # 亮暗场文件路径输入
@@ -68,9 +83,10 @@ def create_proj_viewer_window_style_0(my_data):
             # 衰减信号图像显示
             dpg.add_image('attenuation_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
             #初始加载一次显示图像
-            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_data)
+            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_config)
 
-def create_proj_viewer_window_style_1(my_data):
+def create_proj_viewer_window_style_1(my_config):
+    my_data = my_config.glob_data
     if(dpg.does_item_exist('proj_viewer_window')):
         dpg.delete_item('proj_viewer_window')
     """创建投影查看器窗口"""
@@ -89,7 +105,7 @@ def create_proj_viewer_window_style_1(my_data):
                 min_value=0,
                 max_value=my_data['max_num_proj']-1,
                 callback=change_image_callback,
-                user_data=my_data
+                user_data=my_config
             )
             
             # 亮暗场文件路径输入
@@ -111,7 +127,7 @@ def create_proj_viewer_window_style_1(my_data):
             
 
             #初始加载一次显示图像
-            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_data)
+            change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_config)
 
 def create_recon_viewer_window(my_data):
     """创建重建查看器窗口"""
@@ -127,6 +143,16 @@ def create_recon_viewer_window(my_data):
                     callback=lambda s, a, u: reconstrcut_callback(s, a, u, my_data)
                 )
                 
+                dpg.add_same_line()
+
+                dpg.add_button(
+                    label="Visualize",
+                    tag = 'visualize_recon',
+                    callback=visualize_callback,
+                    user_data=my_data
+                )
+
+
                 # 去环算法选择
                 dpg.add_combo(
                     items=dering.algorithms,

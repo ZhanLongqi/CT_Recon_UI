@@ -21,10 +21,10 @@
     "scale_DSD": 0.2,
     "nDetector": [64, 384],
     "nVoxel": [ 384, 384 , 64],
-    "sVoxel": [25, 25, 6],
+    "sVoxel": [30, 30, 5],
     "dDetector": [0.2, 0.2],
     "nAngles": 600,
-    "offDetector_base": [0, -8.9],
+    "offDetector_base": [-8.9,0],
     "scale_offDetector": 0.2,
     "rotDetector": [0, 0, 0],
     "offOrigin":[0,0,0]

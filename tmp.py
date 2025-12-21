@@ -1,9 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import pyvista as pv
+from pyvista_imgui import ImguiPlotter
 
-data = (
-    np.fromfile("/media/lonqi/PS2000/rat_01_part5/20_30/0001_0.0000_0.raw", dtype=np.uint32)
-        .astype(float).reshape(128,384)
-    )
-data = data / 10
-k = 1
+from common.visualize_npy import visualize_volume
+# visualize_volume(vol_path="/home/lonqi/work/r2_gaussian/output/a69a8615-0/point_cloud/iteration_2000/vol_pred.npy",threshold=0.20)
+visualize_volume(vol_path="/home/lonqi/work/r2_gaussian/output/6f4b138d-f/point_cloud/iteration_5000/vol_pred.npy",threshold=0.20)

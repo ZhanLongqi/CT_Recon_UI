@@ -6,15 +6,20 @@ import numpy as np
 from core.reconstruction import reconstruct
 import traceback
 import core.dering as dering
+import threading
+import os
+import subprocess
+from config.config import Config
+from ui.texture_registry import create_texture_registry
 logger = logging.getLogger(__name__)
 
 def change_image_callback(sender, app_data, user_data):
     """图像索引滑块回调"""
     try:
         new_idx = app_data
-        user_data['curr_image_idx_on_screen'] = new_idx
-        update_texture_display('raw_proj', user_data, new_idx)
-        update_texture_display('attenuation_proj', user_data, new_idx)
+        user_data.glob_data['curr_image_idx_on_screen'] = new_idx
+        update_texture_display('raw_proj', user_data.glob_data, new_idx)
+        update_texture_display('attenuation_proj', user_data.glob_data, new_idx)
     except Exception as e:
         logger.error(f"Change image error: {str(e)}")
         print(f"❌ Error changing image: {str(e)}")
@@ -32,9 +37,11 @@ def change_view_layer_callback(sender, app_data, user_data):
 def update_file_path_callback(sender, app_data, user_data):
     """更新文件路径回调"""
     try:
-        path_key = 'root_path'
-        if path_key in user_data:
-            user_data[path_key] = dpg.get_value(sender)
+        for idx, path in enumerate(user_data.app_cfg['data_source']):
+            if path == app_data:
+                new_config = Config(APP_CONFIG_PATH='./app_config.json',selected_data_source_index=idx)
+                user_data.glob_data = new_config.glob_data
+                break
     except Exception as e:
         logger.error(f"Update file path error: {str(e)}")
         print(f"❌ Error updating file path: {str(e)}")
@@ -161,3 +168,16 @@ def select_dering_callback(sender,app_data,user_data):
                                         callback=lambda s,u,a:dering_callback(sender='Reconstruct_dering',app_data=None,user_data=None,my_data=my_data)
                                  )             
     
+def visualize_callback(sender, app_data, user_data): 
+    target_vol_path = os.path.join( user_data['root_path'], "vol_gt.npy")
+    if not os.path.exists(target_vol_path):
+        print(f"❌ Volume file not found: {target_vol_path}")
+        return
+    proc = subprocess.Popen(
+        "/home/lonqi/anaconda3/envs/CT2/bin/python3 common/visualize_npy.py --vol_path " + target_vol_path,  # 待执行的终端命令
+        shell=True,
+        stdout=subprocess.PIPE,  # 可选：捕获输出（不捕获则直接打印到控制台）
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8"
+    )

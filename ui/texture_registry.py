@@ -2,7 +2,7 @@ import numpy as np
 import dearpygui.dearpygui as dpg
 
 def create_texture_registry(my_data):
-    """创建纹理注册表和初始纹理"""
+
     with dpg.texture_registry(tag="__texture_container"):
         # 投影纹理初始数据
         initial_proj_texture = np.zeros((

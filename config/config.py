@@ -3,8 +3,16 @@ import json  # 替换 yaml 为 json
 import os
 from tigre import geometry
 class Config():
-    def __init__(self,DATA_CONFIG_PATH= "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_50_angle_360_my"):
-    # 配置文件路径（修改为 JSON 配置文件路径）
+    def __init__(self,APP_CONFIG_PATH = './app_config.json',selected_data_source_index=0):
+        
+        if not os.path.exists(APP_CONFIG_PATH):
+            raise FileNotFoundError(f"配置文件不存在: {APP_CONFIG_PATH}")
+        # 加载 JSON 配置（替换 yaml.safe_load 为 json.load）
+        with open(APP_CONFIG_PATH, 'r', encoding='utf-8') as f:
+            self.app_cfg = json.load(f)
+
+        DATA_CONFIG_PATH = os.path.join(self.app_cfg['data_source'][selected_data_source_index],"data_config.json")
+        # 配置文件路径（修改为 JSON 配置文件路径）
 
         # ===================== 加载配置文件并初始化所有参数 =====================
         # 检查配置文件是否存在
@@ -39,8 +47,8 @@ class Config():
 
         # 探测器偏移
         geo.offDetector = np.array([
-            cfg['geometry']['offDetector_base'][0],
-            cfg['geometry']['offDetector_base'][1] * cfg['geometry']['scale_offDetector']
+            cfg['geometry']['offDetector_base'][1] * cfg['geometry']['scale_offDetector'],
+            cfg['geometry']['offDetector_base'][0] * cfg['geometry']['scale_offDetector']
         ], dtype=np.float32)
 
         # 原点偏移（z,y,x）
@@ -65,8 +73,10 @@ class Config():
             "float64": np.float64
         }
 
+
+
         self.glob_data = {
-            'root_path': os.path.dirname(DATA_CONFIG_PATH),
+            'root_path': self.app_cfg['data_source'][selected_data_source_index],
             'data_type': dtype_map[cfg['data']['data_type']],  # 转换为numpy实际类型
             'proj_width': cfg['projection']['width'],
             'proj_height': cfg['projection']['height'],
