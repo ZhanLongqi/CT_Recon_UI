@@ -10,13 +10,13 @@ import core.dering as dering
 from ui.texture_registry import  create_texture_registry
 def create_control_window(my_config):
     """创建控制窗口（文件路径设置）"""
-    with dpg.window(label="Control Panel", width=420, height=1200):
+    with dpg.window(label="Control Panel", width=520, height=1200):
         my_data = my_config.glob_data
         # 原始文件路径输入
         with dpg.group():
             dpg.add_combo(
                 label="Raw File Path Combo",
-                width=300,
+                width=450,
                 default_value=my_data['root_path'],
                 items=my_config.app_cfg['data_source'],
                 callback=update_file_path_callback,
@@ -24,19 +24,15 @@ def create_control_window(my_config):
             )
             dpg.add_input_text(
                 label="Raw File Path",
-                width=300,
+                width=450,
                 default_value=my_data['root_path'],
                 tag='root_path',
                 callback=update_file_path_callback,
+                on_enter=False,
                 user_data=my_config
             )
 
-            # dpg.add_button(label='Confirm Path', callback=lambda s,a,u: 
-            #                (load_raw_files(u.glob_data),
-            #                 create_attenuation_sinogram(u.glob_data),
-            #                 create_texture_registry(u.glob_data)), user_data=my_config)
-
-def create_proj_viewer_window(my_config):
+def create_proj_viewer_window(my_config,pos=(525, 0)):
     my_data = my_config.glob_data
     match my_data['view_proj_style']:
         case 0:
@@ -44,12 +40,12 @@ def create_proj_viewer_window(my_config):
         case 1:
             create_proj_viewer_window_style_1(my_config)
 
-def create_proj_viewer_window_style_0(my_config):
+def create_proj_viewer_window_style_0(my_config,pos=(525, 0)):
     my_data = my_config.glob_data
     if(dpg.does_item_exist('proj_viewer_window')):
         dpg.delete_item('proj_viewer_window')
     """创建投影查看器窗口"""
-    with dpg.window(label='Projection Viewer', pos=(425, 0), width=1200, height=500,tag='proj_viewer_window'):
+    with dpg.window(label='Projection Viewer', pos=pos, width=1200, height=500,tag='proj_viewer_window'):
         with dpg.group():
             # 原始信号图像显示
             dpg.add_image('raw_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
@@ -85,12 +81,12 @@ def create_proj_viewer_window_style_0(my_config):
             #初始加载一次显示图像
             change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_config)
 
-def create_proj_viewer_window_style_1(my_config):
+def create_proj_viewer_window_style_1(my_config,pos=(525, 0)):
     my_data = my_config.glob_data
     if(dpg.does_item_exist('proj_viewer_window')):
         dpg.delete_item('proj_viewer_window')
     """创建投影查看器窗口"""
-    with dpg.window(label='Projection Viewer', pos=(425, 0), width=1200, height=500,tag='proj_viewer_window'):
+    with dpg.window(label='Projection Viewer', pos=pos, width=1200, height=500,tag='proj_viewer_window'):
         with dpg.group():
             # 原始信号图像显示
             dpg.add_image('raw_proj', width=400, height=400)
@@ -129,9 +125,9 @@ def create_proj_viewer_window_style_1(my_config):
             #初始加载一次显示图像
             change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_config)
 
-def create_recon_viewer_window(my_data):
+def create_recon_viewer_window(my_data,pos=(525, 500)):
     """创建重建查看器窗口"""
-    with dpg.window(label='Recon Viewer', width=1120, height=800,pos=(425,500)):
+    with dpg.window(label='Recon Viewer', width=1120, height=800,pos=pos):
         with dpg.group(horizontal=True):
             with dpg.child_window(label='Recon Raw',width=550,height=700):
                 dpg.add_image('recon_slice', width=500, height=500)

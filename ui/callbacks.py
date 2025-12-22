@@ -9,8 +9,9 @@ import core.dering as dering
 import threading
 import os
 import subprocess
-from config.config import Config
+from config.config import APP_Config
 from ui.texture_registry import create_texture_registry
+import json
 logger = logging.getLogger(__name__)
 
 def change_image_callback(sender, app_data, user_data):
@@ -40,10 +41,12 @@ def update_file_path_callback(sender, app_data, user_data):
         for idx, path in enumerate(user_data.app_cfg['data_source']):
             if path == app_data:
                 print('change data source to:', path)
-                new_config = Config(APP_CONFIG_PATH='./app_config.json')
-                user_data.glob_data = new_config.glob_data
                 user_data.app_cfg['default_data_index'] = idx
                 user_data.app_cfg['should_restart'] = True
+                with open(user_data.app_cfg['app_cfg_path'], 'w') as f:
+                    json.dump(user_data.app_cfg, f, indent=4)
+                new_config = APP_Config(APP_CONFIG_PATH=user_data.app_cfg['app_cfg_path'])
+                user_data.glob_data = new_config.glob_data
                 break
     except Exception as e:
         logger.error(f"Update file path error: {str(e)}")

@@ -1,7 +1,7 @@
 import logging
 import dearpygui.dearpygui as dpg
 import common.tools as tools
-from config.config import Config
+from config.config import APP_Config
 from core.data_handling import load_raw_files, create_attenuation_sinogram
 from ui.texture_registry import create_texture_registry
 from ui.windows import create_control_window, create_proj_viewer_window, create_recon_viewer_window,create_proj_viewer_window
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 APP_CONFIG_PATH = './app_config.json'
 
-my_cfg = Config(APP_CONFIG_PATH)
+my_cfg = APP_Config(APP_CONFIG_PATH)
 
 
 def main():
@@ -86,5 +86,4 @@ if __name__ == "__main__":
             break
         else:
             my_cfg.app_cfg['should_restart'] = False
-            with open(APP_CONFIG_PATH, 'w') as f:
-                json.dump(my_cfg.app_cfg, f, indent=4)
+            

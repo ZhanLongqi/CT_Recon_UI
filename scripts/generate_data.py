@@ -12,7 +12,7 @@ import cv2
 import random
 import json
 import tigre
-from config.config import Config
+from config.config import Data_Config
 from common.tools import load_sinogram_from_raw_folder,signal_to_attenuation
 from core.dering import dering
 import matplotlib.pyplot as plt 
@@ -23,7 +23,9 @@ random.seed(0)
 
 
 SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part5/20_30"
-DEST_PATH = "/home/lonqi/work/CT_Recon_UI/data/rat_01_part5_20_30/"
+a = os.path.dirname(SOURCE_PATH)
+b = os.path.basename(SOURCE_PATH)
+DEST_PATH = a+'_'+b
 
 def main(args):
     if os.path.exists(DEST_PATH):
@@ -31,7 +33,7 @@ def main(args):
         shutil.rmtree(DEST_PATH)
     os.makedirs(DEST_PATH, exist_ok=True)
     os.system(f"cp {'/home/lonqi/work/CT_Recon_UI/scripts/data_config_template.json'} {osp.join(DEST_PATH,'data_config.json')}")
-    my_config = Config(osp.join(DEST_PATH,"data_config.json"))
+    my_config = Data_Config(osp.join(DEST_PATH,"data_config.json"))
     proj_subsample = args.proj_subsample
     proj_rescale = args.proj_rescale
     object_scale = args.object_scale

@@ -6,9 +6,12 @@
     },
     "data_source": [
         "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/seashell",
+        "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/pine",
+        "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/walnut",
         "/home/lonqi/work/CT_Recon_UI/data/rat_01_part4_20_30",
         "/home/lonqi/work/CT_Recon_UI/data/rat_01_part5_20_30"
     ],
-    "default_data_index": 0,
-    "should_restart": false
+    "default_data_index": 3,
+    "should_restart": true,
+    "app_cfg_path": "./app_config.json"
 }

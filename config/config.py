@@ -2,20 +2,11 @@ import numpy as np
 import json  # 替换 yaml 为 json
 import os
 from tigre import geometry
-class Config():
-    def __init__(self,APP_CONFIG_PATH = './app_config.json'):
-        
-        if not os.path.exists(APP_CONFIG_PATH):
-            raise FileNotFoundError(f"配置文件不存在: {APP_CONFIG_PATH}")
-        # 加载 JSON 配置（替换 yaml.safe_load 为 json.load）
-        with open(APP_CONFIG_PATH, 'r', encoding='utf-8') as f:
-            self.app_cfg = json.load(f)
 
-        DATA_CONFIG_PATH = os.path.join(self.app_cfg['data_source'][self.app_cfg['default_data_index']],"data_config.json")
-        # 配置文件路径（修改为 JSON 配置文件路径）
+class Data_Config():
 
-        # ===================== 加载配置文件并初始化所有参数 =====================
-        # 检查配置文件是否存在
+    def __init__(self,DATA_CONFIG_PATH):
+
         if not os.path.exists(DATA_CONFIG_PATH):
             raise FileNotFoundError(f"配置文件不存在: {DATA_CONFIG_PATH}")
 
@@ -28,7 +19,7 @@ class Config():
         # 基础参数赋值
         geo.mode = cfg['geometry']['mode']
         geo.DSD = cfg['geometry']['DSD_base'] * cfg['geometry']['scale_DSD']  # 计算源到探测器距离
-        geo.DSO = geo.DSD / 2                                                # 源到物体中心距离
+        geo.DSO = cfg['geometry']['DSO_base'] * cfg['geometry']['scale_DSO']                                              # 源到物体中心距离
 
         # 探测器像素数（转numpy数组并指定类型）
         geo.nDetector = np.array(cfg['geometry']['nDetector'], dtype=np.int32)
@@ -76,7 +67,7 @@ class Config():
 
 
         self.glob_data = {
-            'root_path': self.app_cfg['data_source'][self.app_cfg['default_data_index']],
+            'root_path': os.path.dirname(DATA_CONFIG_PATH),
             'data_type': dtype_map[cfg['data']['data_type']],  # 转换为numpy实际类型
             'proj_width': cfg['projection']['width'],
             'proj_height': cfg['projection']['height'],
@@ -98,3 +89,18 @@ class Config():
             'geo':geo,
             'energy_bin':cfg['data']['energy_bin']
         }
+class APP_Config():
+    def __init__(self,APP_CONFIG_PATH = './app_config.json'):
+        
+        if not os.path.exists(APP_CONFIG_PATH):
+            raise FileNotFoundError(f"配置文件不存在: {APP_CONFIG_PATH}")
+        # 加载 JSON 配置（替换 yaml.safe_load 为 json.load）
+        with open(APP_CONFIG_PATH, 'r', encoding='utf-8') as f:
+            self.app_cfg = json.load(f)
+
+        self.app_cfg['app_cfg_path'] = APP_CONFIG_PATH
+        DATA_CONFIG_PATH = os.path.join(self.app_cfg['data_source'][self.app_cfg['default_data_index']],"data_config.json")
+        
+        self.data_config = Data_Config(DATA_CONFIG_PATH)
+        self.glob_data = self.data_config.glob_data
+        
