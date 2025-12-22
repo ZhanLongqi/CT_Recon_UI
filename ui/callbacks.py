@@ -39,8 +39,10 @@ def update_file_path_callback(sender, app_data, user_data):
     try:
         for idx, path in enumerate(user_data.app_cfg['data_source']):
             if path == app_data:
-                new_config = Config(APP_CONFIG_PATH='./app_config.json',selected_data_source_index=idx)
+                new_config = Config(APP_CONFIG_PATH='./app_config.json')
                 user_data.glob_data = new_config.glob_data
+                user_data.app_cfg['default_data_index'] = idx
+                user_data.app_cfg['should_restart'] = True
                 break
     except Exception as e:
         logger.error(f"Update file path error: {str(e)}")

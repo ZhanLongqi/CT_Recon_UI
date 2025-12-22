@@ -3,7 +3,7 @@ import json  # 替换 yaml 为 json
 import os
 from tigre import geometry
 class Config():
-    def __init__(self,APP_CONFIG_PATH = './app_config.json',selected_data_source_index=0):
+    def __init__(self,APP_CONFIG_PATH = './app_config.json'):
         
         if not os.path.exists(APP_CONFIG_PATH):
             raise FileNotFoundError(f"配置文件不存在: {APP_CONFIG_PATH}")
@@ -11,7 +11,7 @@ class Config():
         with open(APP_CONFIG_PATH, 'r', encoding='utf-8') as f:
             self.app_cfg = json.load(f)
 
-        DATA_CONFIG_PATH = os.path.join(self.app_cfg['data_source'][selected_data_source_index],"data_config.json")
+        DATA_CONFIG_PATH = os.path.join(self.app_cfg['data_source'][self.app_cfg['default_data_index']],"data_config.json")
         # 配置文件路径（修改为 JSON 配置文件路径）
 
         # ===================== 加载配置文件并初始化所有参数 =====================
@@ -76,7 +76,7 @@ class Config():
 
 
         self.glob_data = {
-            'root_path': self.app_cfg['data_source'][selected_data_source_index],
+            'root_path': self.app_cfg['data_source'][self.app_cfg['default_data_index']],
             'data_type': dtype_map[cfg['data']['data_type']],  # 转换为numpy实际类型
             'proj_width': cfg['projection']['width'],
             'proj_height': cfg['projection']['height'],

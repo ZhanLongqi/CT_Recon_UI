@@ -61,6 +61,8 @@ def main():
                 pending_callbacks = dpg.get_callback_queue()
                 dpg.run_callbacks(pending_callbacks)
                 dpg.render_dearpygui_frame()
+                if my_cfg.app_cfg['should_restart']:
+                    break
         else:
             dpg.start_dearpygui()
             
@@ -79,4 +81,11 @@ def main():
         print("👋 Program exited cleanly")
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
+        if not my_cfg.app_cfg['should_restart']:
+            break
+        else:
+            my_cfg.app_cfg['should_restart'] = False
+            with open(APP_CONFIG_PATH, 'w') as f:
+                json.dump(my_cfg.app_cfg, f, indent=4)
