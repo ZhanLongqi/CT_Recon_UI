@@ -55,16 +55,15 @@ def main():
         # 显示视口
         dpg.show_viewport()
         
-        # 运行主循环
-        if tools.is_debugging():
-            while dpg.is_dearpygui_running():
+        while dpg.is_dearpygui_running():
+            if tools.is_debugging():
                 pending_callbacks = dpg.get_callback_queue()
                 dpg.run_callbacks(pending_callbacks)
-                dpg.render_dearpygui_frame()
-                if my_cfg.app_cfg['should_restart']:
-                    break
-        else:
-            dpg.start_dearpygui()
+            dpg.render_dearpygui_frame()
+            if my_cfg.app_cfg['should_restart']:
+                break
+        dpg.destroy_context()
+
             
     except KeyboardInterrupt:
         logger.info("🛑 Program interrupted by user")
@@ -76,7 +75,7 @@ def main():
         
     finally:
         # 清理资源
-        dpg.destroy_context()
+
         logger.info("👋 Program exited cleanly")
         print("👋 Program exited cleanly")
 

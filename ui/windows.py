@@ -31,10 +31,10 @@ def create_control_window(my_config):
                 user_data=my_config
             )
 
-            dpg.add_button(label='Confirm Path', callback=lambda s,a,u: 
-                           (load_raw_files(u.glob_data),
-                            create_attenuation_sinogram(u.glob_data),
-                            create_texture_registry(u.glob_data)), user_data=my_config)
+            # dpg.add_button(label='Confirm Path', callback=lambda s,a,u: 
+            #                (load_raw_files(u.glob_data),
+            #                 create_attenuation_sinogram(u.glob_data),
+            #                 create_texture_registry(u.glob_data)), user_data=my_config)
 
 def create_proj_viewer_window(my_config):
     my_data = my_config.glob_data
