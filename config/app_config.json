@@ -13,7 +13,7 @@
         "/home/lonqi/work/CT_Recon_UI/data/rat_01_part5_20_30",
         "/media/lonqi/PS2000/rat_01_part5"
     ],
-    "default_data_index": 6,
+    "default_data_index": 2,
     "should_restart": true,
-    "app_cfg_path": "./app_config.json"
+    "app_cfg_path": "./config/app_config.json"
 }

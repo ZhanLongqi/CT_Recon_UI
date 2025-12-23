@@ -1,13 +1,11 @@
 import dearpygui.dearpygui as dpg
-import time
 from ui.callbacks import (
     change_image_callback, change_view_layer_callback,
     update_file_path_callback, edit_geo_callback,select_dering_callback,visualize_callback
 )
 from ui.callbacks import reconstrcut_callback,dering_callback
-from core.data_handling import load_raw_files,create_attenuation_sinogram
+from common.data_handling import load_raw_files,create_attenuation_sinogram
 import core.dering as dering
-from ui.texture_registry import  create_texture_registry
 def create_control_window(my_config):
     """创建控制窗口（文件路径设置）"""
     with dpg.window(label="Control Panel", width=520, height=1200):

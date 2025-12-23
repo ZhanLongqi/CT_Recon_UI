@@ -79,7 +79,7 @@ def reconstrcut_callback(sender, app_data, user_data, my_data):
     """重建回调函数"""
     try:
         recon_layer = my_data['recon_layer']
-        sinogram = my_data['sinogram_attenuation_original']
+        sinogram = my_data['attenuation_proj']
         
         if sender == 'Reconstruct':
             recon = reconstruct(sinogram, my_data)
@@ -96,7 +96,7 @@ def reconstrcut_callback(sender, app_data, user_data, my_data):
 def dering_callback(sender,app_data,user_data,my_data):
     try:
         recon_layer = my_data['recon_layer']
-        sinogram = my_data['sinogram_attenuation_original']
+        sinogram = my_data['attenuation_proj']
         sinogram_dering = np.zeros_like(sinogram)
         
         for i in range(sinogram.shape[1]):

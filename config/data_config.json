@@ -11,9 +11,6 @@
     "max_image_index": 599,
     "view_proj_style": 0
   },
-  "texture": {
-    "format": "mvFormat_Float_rgba"
-  },
   "data": {
     "light_field_file_path": "/media/lonqi/PS2000/stacked_3d.raw",
     "data_type": "uint32",

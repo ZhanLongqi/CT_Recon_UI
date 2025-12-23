@@ -11,7 +11,7 @@ def update_texture_display(texture_tag, my_data, idx=0):
         texture = my_data[texture_tag]
         if texture is None or len(texture) == 0:
             return
-        
+
         # 适配RGBA格式并展平
         texture_rgba = texture[idx]
         texture_rgba = texture_rgba - texture.min()

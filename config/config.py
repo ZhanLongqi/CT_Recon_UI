@@ -90,7 +90,7 @@ class Data_Config():
             'energy_bin':cfg['data']['energy_bin']
         }
 class APP_Config():
-    def __init__(self,APP_CONFIG_PATH = './app_config.json'):
+    def __init__(self,APP_CONFIG_PATH = './config/app_config.json'):
         
         if not os.path.exists(APP_CONFIG_PATH):
             raise FileNotFoundError(f"配置文件不存在: {APP_CONFIG_PATH}")

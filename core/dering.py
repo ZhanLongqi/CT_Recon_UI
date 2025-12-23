@@ -1,4 +1,3 @@
-import numpy as np
 import algotom.prep.removal as rem
 import dearpygui.dearpygui as dpg
 algorithms = [

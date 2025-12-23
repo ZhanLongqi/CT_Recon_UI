@@ -2,14 +2,10 @@ import logging
 import dearpygui.dearpygui as dpg
 import common.tools as tools
 from config.config import APP_Config
-from core.data_handling import load_raw_files, create_attenuation_sinogram
+from common.data_handling import load_raw_files, create_attenuation_sinogram
 from ui.texture_registry import create_texture_registry
 from ui.windows import create_control_window, create_proj_viewer_window, create_recon_viewer_window,create_proj_viewer_window
 import traceback
-import json
-import os
-import pyvista as pv
-import numpy as np
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-APP_CONFIG_PATH = './app_config.json'
+APP_CONFIG_PATH = './config/app_config.json'
 
 my_cfg = APP_Config(APP_CONFIG_PATH)
 

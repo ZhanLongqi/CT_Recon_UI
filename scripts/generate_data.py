@@ -7,15 +7,12 @@ import glob
 import numpy as np
 from tqdm import trange
 import tigre.algorithms as algs
-import scipy
 import cv2
 import random
 import json
-import tigre
 from config.config import Data_Config
 from common.tools import load_sinogram_from_raw_folder,signal_to_attenuation
 from core.dering import dering
-import matplotlib.pyplot as plt 
 import algotom.prep.removal as rem
 import shutil
 random.seed(0)
