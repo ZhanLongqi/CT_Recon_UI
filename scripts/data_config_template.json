@@ -23,7 +23,7 @@
     "scale_DSO": 0.2,
     "nDetector": [64, 384],
     "nVoxel": [ 384, 384 , 64],
-    "sVoxel": [24, 24, 4],
+    "sVoxel": [48, 48, 8],
     "dDetector": [0.2, 0.2],
     "nAngles": 600,
     "offDetector_base": [-8.9,0],

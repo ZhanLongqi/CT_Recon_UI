@@ -22,10 +22,11 @@ random.seed(0)
 
 
 
-SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part5/20_30"
-a = os.path.dirname(SOURCE_PATH)
+SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part4/20_30"
+a = os.path.basename(os.path.dirname(SOURCE_PATH))
 b = os.path.basename(SOURCE_PATH)
-DEST_PATH = a+'_'+b
+
+DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/data", a+'_'+b)
 
 def main(args):
     if os.path.exists(DEST_PATH):

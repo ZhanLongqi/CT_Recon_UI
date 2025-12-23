@@ -58,6 +58,7 @@ def load_sinogram_from_raw_folder(
         
         arr = np.fromfile(file_path,dtype=dtype)
         arr = arr / 10
+        arr = arr.astype(np.float32)
         # 重塑为单幅投影尺寸 [探测器行数, 探测器通道数]
         proj = arr.reshape((proj_height, proj_width))
         proj[:proj_height//2,:] = proj[:proj_height//2,:] - proj[proj_height//2:proj_height,:]

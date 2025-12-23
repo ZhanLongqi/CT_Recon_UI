@@ -89,12 +89,13 @@ def create_proj_viewer_window_style_1(my_config,pos=(525, 0)):
     with dpg.window(label='Projection Viewer', pos=pos, width=1200, height=500,tag='proj_viewer_window'):
         with dpg.group():
             # 原始信号图像显示
-            dpg.add_image('raw_proj', width=400, height=400)
-            # 衰减信号图像显示
-            dpg.add_same_line()
-            dpg.add_spacer(width=100)
-            dpg.add_same_line()
-            dpg.add_image('attenuation_proj', width=400, height=400)
+            with dpg.group(horizontal=True):
+                dpg.add_image('raw_proj', width=400, height=400)
+                # 衰减信号图像显示
+
+                dpg.add_spacer(width=100)
+
+                dpg.add_image('attenuation_proj', width=400, height=400)
             # 图像索引滑块
             dpg.add_slider_int(
                 label='Image Index',
@@ -131,22 +132,21 @@ def create_recon_viewer_window(my_data,pos=(525, 500)):
         with dpg.group(horizontal=True):
             with dpg.child_window(label='Recon Raw',width=550,height=700):
                 dpg.add_image('recon_slice', width=500, height=500)
-                
-                # 重建按钮
-                dpg.add_button(
-                    label='Reconstruct',
-                    tag='Reconstruct',
-                    callback=lambda s, a, u: reconstrcut_callback(s, a, u, my_data)
-                )
-                
-                dpg.add_same_line()
 
-                dpg.add_button(
-                    label="Visualize",
-                    tag = 'visualize_recon',
-                    callback=visualize_callback,
-                    user_data=my_data
-                )
+                with dpg.group(horizontal=True):
+                # 重建按钮
+                    dpg.add_button(
+                        label='Reconstruct',
+                        tag='Reconstruct',
+                        callback=lambda s, a, u: reconstrcut_callback(s, a, u, my_data)
+                    )
+
+                    dpg.add_button(
+                        label="Visualize",
+                        tag = 'visualize_recon',
+                        callback=visualize_callback,
+                        user_data=my_data
+                    )
 
 
                 # 去环算法选择
@@ -161,25 +161,25 @@ def create_recon_viewer_window(my_data,pos=(525, 500)):
                 )
 
                 t = lambda s, a, u: dering_callback(s, a, u, my_data)
-                # 去环重建按钮
-                dpg.add_button(
-                    label='Dering',
-                    tag='Reconstruct_dering',
-                    callback=t
-                )
 
-                dpg.add_same_line()
-                
-                # 图层滑块
-                dpg.add_slider_int(
-                    label='Layer',
-                    tag='view_layer',
-                    min_value=0, max_value=63,
-                    callback=change_view_layer_callback,
-                    user_data=my_data,
-                    default_value=my_data['recon_layer'],
-                    width=200
-                )
+                with dpg.group(horizontal=True):
+                # 去环重建按钮
+                    dpg.add_button(
+                        label='Dering',
+                        tag='Reconstruct_dering',
+                        callback=t
+                    )
+                    
+                    # 图层滑块
+                    dpg.add_slider_int(
+                        label='Layer',
+                        tag='view_layer',
+                        min_value=0, max_value=63,
+                        callback=change_view_layer_callback,
+                        user_data=my_data,
+                        default_value=my_data['recon_layer'],
+                        width=200
+                    )
                 
                 # 几何参数设置
                 dpg.add_input_double(
