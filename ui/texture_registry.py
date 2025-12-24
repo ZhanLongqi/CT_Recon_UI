@@ -39,13 +39,13 @@ def create_texture_registry(my_data):
         tag="attenuation_proj"
     )
     my_texture_registry.add_texture(
-        width=my_data['proj_width'],
-        height=my_data['proj_width'],
+        width= int(my_data['geo'].nVoxel[0]),
+        height=int(my_data['geo'].nVoxel[1]),
         tag='recon_slice'
     )
     my_texture_registry.add_texture(
-        width=my_data['proj_width'],
-        height=my_data['proj_width'],
+        width= int(my_data['geo'].nVoxel[0]),
+        height=int(my_data['geo'].nVoxel[1]),
         tag='recon_slice_dering'
     )   
 

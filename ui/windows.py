@@ -30,13 +30,11 @@ def create_control_window(my_config):
                 user_data=my_config
             )
 
-def create_proj_viewer_window(my_config,pos=(525, 0)):
-    my_data = my_config.glob_data
-    match my_data['view_proj_style']:
-        case 0:
-            create_proj_viewer_window_style_0(my_config)
-        case 1:
-            create_proj_viewer_window_style_1(my_config)
+def create_proj_viewer_window(my_cfg,pos=(525, 0)):
+    if my_cfg.glob_data['proj_width'] == 384:
+        create_proj_viewer_window_style_0(my_cfg)
+    else:
+        create_proj_viewer_window_style_1(my_cfg)
 
 def create_proj_viewer_window_style_0(my_config,pos=(525, 0)):
     my_data = my_config.glob_data
@@ -46,13 +44,13 @@ def create_proj_viewer_window_style_0(my_config,pos=(525, 0)):
     with dpg.window(label='Projection Viewer', pos=pos, width=1200, height=500,tag='proj_viewer_window'):
         with dpg.group():
             # 原始信号图像显示
-            dpg.add_image('raw_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
+            dpg.add_image('raw_proj', width=900, height=150)
 
             # 图像索引滑块
             dpg.add_slider_int(
                 label='Image Index',
                 min_value=0,
-                max_value=my_data['max_num_proj'],
+                max_value=my_data['n_proj'],
                 callback=change_image_callback,
                 user_data=my_config
             )
@@ -75,7 +73,7 @@ def create_proj_viewer_window_style_0(my_config,pos=(525, 0)):
             )
             
             # 衰减信号图像显示
-            dpg.add_image('attenuation_proj', width=my_data['proj_width']*3, height=my_data['proj_height']*3)
+            dpg.add_image('attenuation_proj', width=900, height=150)
             #初始加载一次显示图像
             change_image_callback(sender=None,app_data=my_data['curr_image_idx_on_screen'],user_data=my_config)
 
@@ -98,7 +96,7 @@ def create_proj_viewer_window_style_1(my_config,pos=(525, 0)):
             dpg.add_slider_int(
                 label='Image Index',
                 min_value=0,
-                max_value=my_data['max_num_proj']-1,
+                max_value=my_data['n_proj']-1,
                 callback=change_image_callback,
                 user_data=my_config
             )

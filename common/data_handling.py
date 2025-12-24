@@ -252,6 +252,8 @@ def load_raw_files(my_data):
             raise ValueError(f"{str(my_data['file_type'])} is not supported!")
 
         my_data['raw_proj'] = sinogram_original
+        my_data['raw_proj_max'] = sinogram_original.max()
+        my_data['raw_proj_min'] = sinogram_original.min()
         my_data['attenuation_proj'] = np.zeros_like(sinogram_original)
 
         logger.info("✅ Raw files loaded and normalized successfully!")
@@ -280,6 +282,9 @@ def create_attenuation_sinogram(my_data):
             my_data['attenuation_proj'] = attenuation_data
         else:
             my_data['attenuation_proj'] = my_data['raw_proj']
+
+        my_data['attenuation_proj_max'] = my_data['attenuation_proj'].max()
+        my_data['attenuation_proj_min'] = my_data['attenuation_proj'].min()
 
         logger.info("✅ Attenuation sinogram generated successfully!")
         return True

@@ -11,7 +11,7 @@ import cv2
 import random
 import json
 from config.config import Data_Config
-from common.tools import load_sinogram_from_raw_folder,signal_to_attenuation
+from common.data_handling import load_sinogram_from_raw_folder,signal_to_attenuation
 from core.dering import dering
 import algotom.prep.removal as rem
 import shutil
@@ -19,44 +19,51 @@ random.seed(0)
 
 
 
-SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part4/20_30"
+SOURCE_PATH = "/media/lonqi/PS2000/r2_gs_dataset/pine"
+type = 'npy'
 a = os.path.basename(os.path.dirname(SOURCE_PATH))
 b = os.path.basename(SOURCE_PATH)
-
-DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/data", a+'_'+b)
+DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/asset/data", a+'_'+b)
+META_DATA_TEMPLATE_PATH = "/home/lonqi/work/CT_Recon_UI/scripts/meta_data_template_for_r2_gs.json"
 
 def main(args):
     if os.path.exists(DEST_PATH):
         # 递归删除目录（无论是否为空）
         shutil.rmtree(DEST_PATH)
     os.makedirs(DEST_PATH, exist_ok=True)
-    os.system(f"cp {'/home/lonqi/work/CT_Recon_UI/scripts/data_config_template.json'} {osp.join(DEST_PATH,'data_config.json')}")
-    my_config = Data_Config(osp.join(DEST_PATH,"data_config.json"))
+    my_config = Data_Config(META_DATA_TEMPLATE_PATH)
     proj_subsample = args.proj_subsample
-    proj_rescale = args.proj_rescale
-    object_scale = args.object_scale
-
-    n_proj = 600
-
-    angles = np.linspace(0,np.pi * 2 ,n_proj).tolist()
 
     # Read and save projections
     output_path = DEST_PATH
 
-    sinogram = load_sinogram_from_raw_folder(folder_path=SOURCE_PATH,file_format='raw',dtype=np.uint32,proj_width=384,proj_height=128)
-    attenuation_sinogram = signal_to_attenuation(sinogram=sinogram,light_field_path="/media/lonqi/PS2000/stacked_3d.raw")
-    attenuation_sinogram = attenuation_sinogram - np.min(attenuation_sinogram)
-    attenuation_sinogram = attenuation_sinogram / np.max(attenuation_sinogram)
-    for i in range(attenuation_sinogram.shape[1]):
-        attenuation_sinogram[:,i,:] = rem.remove_stripe_based_filtering(attenuation_sinogram[:,i,:],size=21,sigma=3)
+    if type == 'raw':
+        sinogram = load_sinogram_from_raw_folder(folder_path=SOURCE_PATH,file_format='raw',dtype=np.uint32,proj_width=384,proj_height=128)
+        attenuation_sinogram = signal_to_attenuation(sinogram=sinogram,light_field_path="/media/lonqi/PS2000/stacked_3d.raw")
+        attenuation_sinogram = attenuation_sinogram - np.min(attenuation_sinogram)
+        attenuation_sinogram = attenuation_sinogram / np.max(attenuation_sinogram)
 
-    all_save_path = osp.join(output_path, "proj_all")
+        for i in range(attenuation_sinogram.shape[1]):
+            attenuation_sinogram[:,i,:] = rem.remove_stripe_based_filtering(attenuation_sinogram[:,i,:],size=21,sigma=3)
+    elif type == 'npy':
+        attenuation_sinogram = []
+        for file_path in sorted(glob.glob(osp.join(SOURCE_PATH, "*.npy"))):
+            proj = np.load(file_path)
+            attenuation_sinogram.append(proj)
+        attenuation_sinogram = np.array(attenuation_sinogram)
+
+
+    n_proj = attenuation_sinogram.shape[0]
+    angles = np.linspace(0, 2 * np.pi, n_proj, endpoint=False)
+    # all_save_path = osp.join(output_path, "proj_all")
     train_save_path = osp.join(output_path, "proj_train")
     test_save_path = osp.join(output_path, "proj_test")
-    os.makedirs(all_save_path, exist_ok=True)
+
+    # os.makedirs(all_save_path, exist_ok=True)
     os.makedirs(train_save_path, exist_ok=True)
     os.makedirs(test_save_path, exist_ok=True)
-    proj_mat_paths = sorted(glob.glob(osp.join(SOURCE_PATH, "*.raw")))
+
+    proj_mat_paths = sorted(glob.glob(osp.join(SOURCE_PATH, "*."+type)))
     projection_train_list = []
     projection_test_list = []
     train_ids = np.linspace(0, n_proj - 1, args.n_train).astype(int)
@@ -98,7 +105,7 @@ def main(args):
                 dim_offset = int((dim_y - dim_x) / 2)
                 proj = proj[:, dim_offset:-dim_offset]
 
-        np.save(osp.join(all_save_path, proj_save_name + ".npy"), proj)
+        # np.save(osp.join(all_save_path, proj_save_name + ".npy"), proj)
         if i_proj in train_ids:
             np.save(osp.join(train_save_path, proj_save_name + ".npy"), proj)
         elif i_proj in test_ids:
@@ -107,31 +114,10 @@ def main(args):
     # Scanner config
     geo = my_config.glob_data['geo']
     proj = np.load(osp.join(output_path, projection_train_list[0]["file_path"]))
-    bbox = np.array(
-        [
-            np.array(geo.offOrigin) - np.array(geo.sVoxel) / 2,
-            np.array(geo.offOrigin) + np.array(geo.sVoxel) / 2,
-        ]
-    ).tolist()
-    scanner_cfg = {
-        "mode": geo.mode,
-        "DSD": geo.DSD,
-        "DSO": geo.DSO,
-        "nDetector": geo.nDetector.tolist(),
-        "sDetector": geo.sDetector.tolist(),
-        "nVoxel": geo.nVoxel[::-1].tolist(),
-        "sVoxel": geo.sVoxel[::-1].tolist(),
-        "offOrigin": geo.offOrigin.tolist(),
-        "offDetector": geo.offDetector.tolist(),
-        "accuracy": args.accuracy,
-        "noise": True,
-        "filter": None,
-    }
 
     # Reconstruct with FDK as gt
     ct_gt_save_path = osp.join(output_path, "vol_gt.npy")
     
-
     print("reconstruct with FDK")
     angles = geo.angles
     print(geo)
@@ -140,16 +126,11 @@ def main(args):
     np.save(ct_gt_save_path, ct_gt)
 
     # Save
-    meta_data = {
-        "scanner": scanner_cfg,
-        "vol": "vol_gt.npy",
-        "radius": 1.0,
-        "bbox": bbox,
-        "proj_train": projection_train_list,
-        "proj_test": projection_test_list,
-    }
-    with open(osp.join(output_path, "meta_data.json"), "w", encoding="utf-8") as f:
-        json.dump(meta_data, f, indent=4)
+    my_config.cfg['data']['width'] = proj.shape[1]
+    my_config.cfg['data']['height'] = proj.shape[0]
+    my_config.cfg['data']['n_proj'] = args.n_train + args.n_test
+    my_config.cfg.update({"proj_train": projection_train_list, "proj_test": projection_test_list})
+    my_config.save_config(osp.join(output_path, "meta_data.json"))
 
     print(f"Data saved in {output_path}")
 

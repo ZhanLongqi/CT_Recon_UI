@@ -1,0 +1,50 @@
+{
+    "data": {
+        "width": 384,
+        "height": 64,
+        "n_proj": 600,
+        "n_sample_per_pixel": 10,
+        "energy_bin": "20_30",
+        "light_field_file_path": "/media/lonqi/PS2000/stacked_3d.raw",
+        "data_type": "float32",
+        "recon_layer": 30,
+        "dering_algorithm": "None",
+        "type": "npy",
+        "need_correction": false
+    },
+    "scanner": {
+        "mode": "cone",
+        "DSD": 221.024,
+        "DSO": 210.512,
+        "nDetector": [
+            64,
+            384
+        ],
+        "sDetector": [
+            6.4,
+            38.4
+        ],
+        "nVoxel": [
+            384,
+            384,
+            64
+        ],
+        "sVoxel": [
+            48.0,
+            48.0,
+            8.0
+        ],
+        "offOrigin": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "offDetector": [
+            0.0,
+            -1.7799999713897705
+        ],
+        "accuracy": 0.5,
+        "noise": true,
+        "filter": null
+    }
+}

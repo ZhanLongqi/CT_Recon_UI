@@ -5,15 +5,15 @@
         "height": 1200
     },
     "data_source": [
-        "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/seashell",
-        "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/pine",
-        "/home/lonqi/work/CT_Recon_UI/data/cone_ntrain_25_angle_360/walnut",
-        "/home/lonqi/work/CT_Recon_UI/data/vol_gt_cone",
-        "/home/lonqi/work/CT_Recon_UI/data/rat_01_part4_20_30",
-        "/home/lonqi/work/CT_Recon_UI/data/rat_01_part5_20_30",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/vol_gt_cone",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/r2_gs_dataset_pine",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/r2_gs_dataset_seashell",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/rat_01_part4_20_30",
+        "/home/lonqi/work/CT_Recon_UI/asset/simulation_data/something",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/rat_01_part5_20_30",
         "/media/lonqi/PS2000/rat_01_part5"
     ],
-    "default_data_index": 2,
+    "default_data_index": 1,
     "should_restart": true,
     "app_cfg_path": "./config/app_config.json"
 }
