@@ -5,15 +5,16 @@
         "height": 1200
     },
     "data_source": [
-        "/home/lonqi/work/CT_Recon_UI/asset/data/vol_gt_cone",
         "/home/lonqi/work/CT_Recon_UI/asset/data/r2_gs_dataset_pine",
         "/home/lonqi/work/CT_Recon_UI/asset/data/r2_gs_dataset_seashell",
         "/home/lonqi/work/CT_Recon_UI/asset/data/rat_01_part4_20_30",
-        "/home/lonqi/work/CT_Recon_UI/asset/simulation_data/something",
         "/home/lonqi/work/CT_Recon_UI/asset/data/rat_01_part5_20_30",
-        "/media/lonqi/PS2000/rat_01_part5"
+        "/home/lonqi/work/CT_Recon_UI/asset/data/ball_20_30",
+        "/media/lonqi/PS2000/rat_01_part5",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/seashell_data",
+        "/home/lonqi/work/CT_Recon_UI/asset/data/ball_data"
     ],
-    "default_data_index": 1,
+    "default_data_index": 3,
     "should_restart": true,
     "app_cfg_path": "./config/app_config.json"
 }

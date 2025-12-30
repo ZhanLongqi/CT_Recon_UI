@@ -18,13 +18,29 @@ import shutil
 random.seed(0)
 
 
-
-SOURCE_PATH = "/media/lonqi/PS2000/r2_gs_dataset/pine"
-type = 'npy'
+#自有数据集用
+SOURCE_PATH = "/media/lonqi/PS2000/rat_01_part5/20_30"
+type = 'raw'
 a = os.path.basename(os.path.dirname(SOURCE_PATH))
 b = os.path.basename(SOURCE_PATH)
 DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/asset/data", a+'_'+b)
-META_DATA_TEMPLATE_PATH = "/home/lonqi/work/CT_Recon_UI/scripts/meta_data_template_for_r2_gs.json"
+META_DATA_TEMPLATE_PATH = "/home/lonqi/work/CT_Recon_UI/scripts/meta_data_template.json"
+
+##公开数据集用
+# SOURCE_PATH = "/home/lonqi/work/CT_Recon_UI/asset/simulation_data/seashell"
+# type = 'npy'
+# a = os.path.basename(os.path.dirname(SOURCE_PATH))
+# b = os.path.basename(SOURCE_PATH)
+# DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/asset/data", a+'_'+b)
+# META_DATA_TEMPLATE_PATH = "/home/lonqi/work/CT_Recon_UI/scripts/meta_data_template_for_r2_gs.json"
+
+#仿真用
+# SOURCE_PATH = "/home/lonqi/work/CT_Recon_UI/asset/simulation_data/ball/data"
+# type = 'npy'
+# a = os.path.basename(os.path.dirname(SOURCE_PATH))
+# b = os.path.basename(SOURCE_PATH)
+# DEST_PATH = os.path.join("/home/lonqi/work/CT_Recon_UI/asset/data", a+'_'+b)
+# META_DATA_TEMPLATE_PATH = osp.join(osp.dirname(SOURCE_PATH),'meta_data.json')
 
 def main(args):
     if os.path.exists(DEST_PATH):
@@ -129,6 +145,7 @@ def main(args):
     my_config.cfg['data']['width'] = proj.shape[1]
     my_config.cfg['data']['height'] = proj.shape[0]
     my_config.cfg['data']['n_proj'] = args.n_train + args.n_test
+    my_config.cfg['vol'] = osp.join(output_path,'vol_gt.npy')
     my_config.cfg.update({"proj_train": projection_train_list, "proj_test": projection_test_list})
     my_config.save_config(osp.join(output_path, "meta_data.json"))
 
@@ -143,9 +160,8 @@ if __name__ == "__main__":
     parser.add_argument("--proj_subsample", default=1, type=int, help="subsample projections pixels")
     parser.add_argument("--proj_rescale", default=400.0, type=float, help="rescale projection values to fit density to around [0,1]")
     parser.add_argument("--object_scale", default=50, type=int, help="Rescale the whole scene to similar scales as the synthetic data")
-    parser.add_argument("--n_test", default=100, type=int, help="number of test")
-    parser.add_argument("--n_train", default=500, type=int, help="number of train")
-
+    parser.add_argument("--n_test", default=1, type=int, help="number of test")
+    parser.add_argument("--n_train", default=599, type=int, help="number of train")
     parser.add_argument("--accuracy", default=0.5, type=float, help="accuracy")
     
     

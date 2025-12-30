@@ -57,19 +57,23 @@ def edit_geo_callback(sender, app_data, user_data):
     try:
         match sender:
             case 'geo_dsd':
-                my_data['geo'].DSD = app_data
+                user_data['geo'].DSD = app_data
             case 'off_detector_0':
-                my_data['geo'].offDetector[0] = app_data
+                user_data['geo'].offDetector[0] = app_data
+                user_data['geo'].offOrigin[0] = user_data['geo'].offDetector[0] / user_data['geo'].dDetector[0] * user_data['geo'].dVoxel[0]
+                dpg.set_value('off_origin_0',user_data['geo'].offOrigin[0])
             case 'off_detector_1':
-                my_data['geo'].offDetector[1] = app_data
+                user_data['geo'].offDetector[1] = app_data
             case 'off_detector_2':
-                my_data['geo'].offDetector[2] = app_data
+                user_data['geo'].offDetector[2] = app_data
             case 'off_origin_0':
-                my_data['geo'].offOrigin[0] = app_data
+                user_data['geo'].offOrigin[0] = app_data
             case 'off_origin_1':
-                my_data['geo'].offOrigin[1] = app_data
+                user_data['geo'].offOrigin[1] = app_data
             case 'off_origin_2':
-                my_data['geo'].offOrigin[2] = app_data
+                user_data['geo'].offOrigin[2] = app_data
+            case 'rot_detector_0':
+                user_data['geo'].rotDetector[1] = app_data
         dering_callback(sender='Reconstruct', app_data=None, user_data=None, my_data=user_data)
     except Exception as e:
         logger.error(f"Edit geo error: {str(e)}")

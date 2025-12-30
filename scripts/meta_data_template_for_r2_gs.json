@@ -1,8 +1,8 @@
 {
     "data": {
-        "width": 560,
-        "height": 560,
-        "n_proj": 721,
+        "width": 256,
+        "height": 256,
+        "n_proj": 600,
         "n_sample_per_pixel": 1,
         "energy_bin": "20_30",
         "light_field_file_path": "/media/lonqi/PS2000/stacked_3d.raw",
@@ -17,22 +17,22 @@
         "DSD": 27.687,
         "DSO": 11.533,
         "nDetector": [
-            560,
-            560
+            256,
+            256
         ],
-        "sDetector": [
-            5.6000000000000005,
-            5.6000000000000005
+        "dDetector": [
+            0.008,
+            0.008
         ],
         "nVoxel": [
             256,
             256,
             256
         ],
-        "sVoxel": [
-            2.0,
-            2.0,
-            2.0
+        "dVoxel": [
+            0.008,
+            0.008,
+            0.008
         ],
         "offOrigin": [
             0.0,
@@ -40,6 +40,11 @@
             0.0
         ],
         "offDetector": [
+            0.0,
+            0.0
+        ],
+        "rotDetector": [
+            0.0,
             0.0,
             0.0
         ],

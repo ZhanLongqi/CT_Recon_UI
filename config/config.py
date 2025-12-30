@@ -33,29 +33,32 @@ class Data_Config():
 
         # 体素参数
         geo.nVoxel = np.array(cfg['scanner']['nVoxel'])[::-1]
-        geo.sVoxel = np.array(cfg['scanner']['sVoxel'], dtype=np.float32)[::-1]
-        geo.dVoxel = geo.sVoxel / geo.nVoxel
+        geo.dVoxel = np.array(cfg['scanner']['dVoxel'])[::-1]
+        geo.sVoxel = geo.nVoxel * geo.dVoxel
 
         # 探测器像素大小
         geo.nDetector = np.array(cfg['scanner']['nDetector'], dtype=np.int32)
-        geo.sDetector = np.array(cfg['scanner']['sDetector'])  # 探测器总尺寸
-        geo.dDetector = geo.sDetector / geo.nDetector#np.array(cfg['scanner']['dDetector'], dtype=np.float32)
+        geo.dDetector = np.array(cfg['scanner']['dDetector'])
+        geo.sDetector = geo.dDetector * geo.nDetector
 
         # 角度参数（生成等间距角度）
-        geo.angles = np.linspace(0, 2 * np.pi, cfg['data']['n_proj'])
+        if 'proj_train' in cfg :
+            geo.angles = []
+            subsets = ['proj_train','proj_test']
+            for subset in subsets:
+                for t in cfg[subset]:
+                    geo.angles.append(t['angle'])
+            geo.angles = np.asarray(sorted(geo.angles))
+        else:
+            geo.angles = np.linspace(0,2*np.pi,cfg['data']['n_proj'])
 
         # 探测器偏移
-        geo.offDetector = np.array([
-            cfg['scanner']['offDetector'][1],
-            cfg['scanner']['offDetector'][0]
-        ], dtype=np.float32)
+        geo.offDetector = np.array(cfg['scanner']['offDetector'])
 
         # 原点偏移（z,y,x）
-        geo.offOrigin = np.array([
-            cfg['scanner']['offOrigin'][0],
-            cfg['scanner']['offOrigin'][1],
-            cfg['scanner']['offOrigin'][2]
-        ], dtype=np.float32)
+        geo.offOrigin = np.array(cfg['scanner']['offOrigin'])[::-1]
+
+        geo.rotDetector = np.array(cfg['scanner']['rotDetector'])
         
         geo.accuracy = 1.0
 
@@ -78,9 +81,7 @@ class Data_Config():
             'n_proj': cfg['data']['n_proj'],
             'curr_image_idx_on_screen': 0,  # 初始值固定
             'light_field_file_path': cfg['data']['light_field_file_path'],
-            'sinogram_raw_signal_original': [],
             'raw_proj': [],
-            'sinogram_attenuation_original': [],
             'attenuation_proj': [],
             'recon_slice': [],
             'recon_slice_dering':[],

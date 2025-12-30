@@ -170,7 +170,7 @@ def create_recon_viewer_window(my_data,pos=(525, 500)):
                     dpg.add_slider_int(
                         label='Layer',
                         tag='view_layer',
-                        min_value=0, max_value=63,
+                        min_value=0, max_value=my_data['proj_height']-1,
                         callback=change_view_layer_callback,
                         user_data=my_data,
                         default_value=my_data['recon_layer'],
@@ -181,30 +181,69 @@ def create_recon_viewer_window(my_data,pos=(525, 500)):
                 dpg.add_input_double(
                     label="DSD",
                     tag="geo_dsd",
-                    width=200,
+                    width=100,
                     min_value=1105*0.2, max_value=1108*0.2,
                     callback=edit_geo_callback,
                     user_data=my_data,
                     default_value=my_data['geo'].DSD
                 )
+                with dpg.group(horizontal=True):
+                    dpg.add_input_double(
+                        label="off_det_0",
+                        tag="off_detector_0",
+                        width=100,
+                        callback=edit_geo_callback,
+                        user_data=my_data,
+                        default_value=my_data['geo'].offDetector[0],
+                        step=0.05
+                    )
+                    dpg.add_input_double(
+                        label="off_det_1",
+                        tag="off_detector_1",
+                        width=100,
+                        callback=edit_geo_callback,
+                        user_data=my_data,
+                        default_value=my_data['geo'].offDetector[1],
+                        step=0.005
+                    )
+                with dpg.group(horizontal=True):
+                    dpg.add_input_double(
+                        label="off_Ori_0",
+                        tag="off_origin_0",
+                        width=100,
+                        callback=edit_geo_callback,
+                        user_data=my_data,
+                        default_value=my_data['geo'].offOrigin[0],
+                        step=0.005
+                    )
+                    dpg.add_input_double(
+                        label="off_Ori_1",
+                        tag="off_origin_1",
+                        width=100,
+                        callback=edit_geo_callback,
+                        user_data=my_data,
+                        default_value=my_data['geo'].offOrigin[1],
+                        step=0.005
+                    )
+                    dpg.add_input_double(
+                        label="off_Ori_2",
+                        tag="off_origin_2",
+                        width=100,
+                        callback=edit_geo_callback,
+                        user_data=my_data,
+                        default_value=my_data['geo'].offOrigin[2],
+                        step=0.5
+                    )
                 dpg.add_input_double(
-                    label="off_detector_0",
-                    tag="off_detector_0",
-                    width=200,
+                    label="rot_detector_0",
+                    tag="rot_detector_0",
+                    width=100,
                     callback=edit_geo_callback,
                     user_data=my_data,
-                    default_value=my_data['geo'].offDetector[0],
-                    step=0.001
-                )
-                dpg.add_input_double(
-                    label="off_detector_1",
-                    tag="off_detector_1",
-                    width=200,
-                    callback=edit_geo_callback,
-                    user_data=my_data,
-                    default_value=my_data['geo'].offDetector[1],
+                    default_value=my_data['geo'].rotDetector[0],
                     step=0.005
                 )
+
 
             with dpg.child_window(label='Recon Raw',width=550,height=700,tag='Recon_viewer_child_1'):
                 dpg.add_image('recon_slice_dering', width=500, height=500)

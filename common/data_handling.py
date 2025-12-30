@@ -226,6 +226,9 @@ def load_sinogram_from_train_test_npy_folder(
     
     # 合并为完整sinogram
     sinogram = np.stack(sinogram_list, axis=0).astype(np.float32)
+    # print("warning")
+    # sinogram[sinogram < 0.6] = 0
+    # sinogram[sinogram >= 0.6] = 1
     print(f"合并后Sinogram形状：{sinogram.shape} "
           f"（角度数：{sinogram.shape[0]}, 探测器行数：{sinogram.shape[1]}, 探测器通道数：{sinogram.shape[2]}）")
     
